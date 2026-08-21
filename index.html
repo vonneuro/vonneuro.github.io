@@ -270,6 +270,17 @@ pre .c{color:#6B6480; font-style:italic} pre .a{color:#F07C7C} pre .s{color:#7FD
 @media (max-width:1000px){ .chain{grid-template-columns:repeat(2,1fr)} }
 @media (max-width:600px){ .chain{grid-template-columns:1fr} }
 
+/* ── callout ── */
+.callout{margin-top:26px; border:1px solid var(--line); border-left:2px solid var(--arc); border-radius:3px; background:var(--panel); padding:clamp(18px,2.2vw,26px)}
+.callout h4{font-family:var(--f-display); font-weight:600; font-variation-settings:"wdth" 106; font-size:1.16rem; letter-spacing:-.02em; margin:0 0 8px; color:#F8F6FC}
+.callout > p{margin:0; font-size:15px; color:var(--txt-mid); max-width:62ch}
+.callout .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px 28px; margin-top:18px}
+.callout .grid > div{border-top:1px solid var(--line-2); padding-top:12px}
+.callout .grid b{display:block; font-family:var(--f-code); font-weight:500; font-size:12.5px; color:var(--arc-2); margin-bottom:5px}
+.callout .grid p{margin:0; font-size:14.2px; color:var(--txt-mid)}
+.callout .tail{margin-top:18px; padding-top:14px; border-top:1px solid var(--line-2); font-family:var(--f-code); font-size:12.4px; color:var(--txt-soft); line-height:1.65}
+@media (max-width:800px){ .callout .grid{grid-template-columns:1fr; gap:0} }
+
 /* ── table ── */
 .tbl-wrap{margin-top:38px; border:1px solid var(--line); border-radius:3px; overflow-x:auto; background:var(--panel)}
 table{border-collapse:collapse; width:100%; min-width:760px}
@@ -407,7 +418,7 @@ footer a:hover{color:var(--arc-2)}
       <ul>
         <li>p-bit fabric</li><li>quantum annealer</li><li>1T1R crossbar</li><li>nanowire mesh</li>
         <li>event ASIC</li><li>photonic operator</li><li>neuronal culture</li><li>reaction network</li>
-        <li>FPGA</li><li>x86-64 · arm64 · riscv64</li>
+        <li>FPGA</li><li>GPU · CUDA / ROCm / Metal / Vulkan</li><li>x86-64 · arm64 · riscv64</li>
       </ul>
     </div>
   </div>
@@ -475,7 +486,7 @@ footer a:hover{color:var(--arc-2)}
           <h3>Descend a landscape</h3>
           <p>Objectives, ground states, fixed points. The program declares the energy and the
              tolerated gap; the backend picks the schedule and reports where it landed.</p>
-          <p class="foot">p-bits · annealers · Ising machines · crossbars</p>
+          <p class="foot">p-bits · annealers · Ising machines · crossbars · GPU</p>
         </div>
         <div class="regime r2">
           <svg viewBox="0 0 200 66" aria-hidden="true">
@@ -492,7 +503,7 @@ footer a:hover{color:var(--arc-2)}
           <p>Inference, marginals, low-energy ensembles. The contract is distributional — total
              variation, effective sample size — so devices that make randomness differently can
              still be compared.</p>
-          <p class="foot">p-bits · annealers as samplers · stochastic devices</p>
+          <p class="foot">p-bits · annealers as samplers · stochastic devices · GPU chains</p>
         </div>
         <div class="regime r3">
           <svg viewBox="0 0 200 66" aria-hidden="true">
@@ -899,7 +910,7 @@ $ vnstat --run 4417 --watch
           </thead>
           <tbody>
             <tr><td>CPU — x86-64, arm64, riscv64</td><td class="mono">vn-hal/cpu</td><td><span class="mode m1">minimise</span> <span class="mode m2">sample</span> <span class="mode m3">evolve</span></td><td>Counters, modelled</td><td><span class="pill ok">stable</span></td></tr>
-            <tr><td>GPU — CUDA, Metal, Vulkan</td><td class="mono">vn-hal/gpu</td><td><span class="mode m1">minimise</span> <span class="mode m2">sample</span></td><td>Board telemetry</td><td><span class="pill ok">stable</span></td></tr>
+            <tr><td>GPU — CUDA, ROCm, Metal, Vulkan</td><td class="mono">vn-hal/gpu</td><td><span class="mode m1">minimise</span> <span class="mode m2">sample</span> <span class="mode m3">evolve</span></td><td>Board telemetry, measured</td><td><span class="pill ok">stable</span></td></tr>
             <tr><td>p-bit fabric on FPGA</td><td class="mono">vn-hal/pbit</td><td><span class="mode m2">sample</span> <span class="mode m1">minimise</span></td><td>Rail measurement</td><td><span class="pill ok">stable</span></td></tr>
             <tr><td>Quantum annealer / Ising machine</td><td class="mono">vn-hal/anneal</td><td><span class="mode m1">minimise</span> <span class="mode m2">sample</span></td><td>Service-reported</td><td><span class="pill pre">preview</span></td></tr>
             <tr><td>Event-driven neuromorphic ASIC</td><td class="mono">vn-hal/spike</td><td><span class="mode m3">evolve</span> <span class="mode m2">sample</span></td><td>On-chip counters</td><td><span class="pill pre">preview</span></td></tr>
@@ -913,8 +924,26 @@ $ vnstat --run 4417 --watch
         </table>
       </div>
 
+      <div class="callout rv">
+        <h4>The GPU backend is not a consolation prize</h4>
+        <p>It is where most people will start, where large instances actually fit, and it is the
+          reference every physical run gets compared against. All three regimes are native.</p>
+        <div class="grid">
+          <div><b>minimise</b><p>Thousands of instances relaxed at once; anneal schedules run as
+            batched tensor ops, with the objective gap checked per instance.</p></div>
+          <div><b>sample</b><p>Independent chains in parallel, held to exactly the distributional
+            contract a p-bit fabric has to meet — same test, different machine.</p></div>
+          <div><b>evolve</b><p>Stiff and non-stiff integrators for driven dynamics, respecting the
+            declared measurement grid so the time decomposition stays valid.</p></div>
+        </div>
+        <p class="tail">CUDA, ROCm, Metal and Vulkan · multi-GPU sharding for graphs that outgrow one
+          board · board telemetry feeds the ledger, so GPU runs carry measured dissipation rather
+          than a model — which is what makes them usable as the baseline.</p>
+      </div>
+
       <p class="host">Host systems: Linux 6.1+ · macOS 14+ · Windows 11 via WSL2 · bare metal on arm64
-        and riscv64.<br>Bindings: C ABI, Python, Rust. Neuromorphic backends can lower through
+        and riscv64. GPU backends follow the host's driver stack, including headless nodes and
+        multi-GPU boxes.<br>Bindings: C ABI, Python, Rust. Neuromorphic backends can lower through
         existing intermediate layers rather than around them.</p>
     </div>
   </div>
@@ -927,9 +956,9 @@ $ vnstat --run 4417 --watch
     <svg class="watermark" aria-hidden="true"><use href="#vn-mark"/></svg>
     <div>
       <h2 class="h-display">Start on the CPU.<br>Move to matter later.</h2>
-      <p>Install the toolchain, run the digital reference on your laptop, then point the same
-         semantic graph at a p-bit fabric, an annealer, or a crossbar. The source doesn't change —
-         only the evidence record does.</p>
+      <p>Install the toolchain, run the digital reference on your laptop, scale it across GPUs when
+         the instances get large, then point the same semantic graph at a p-bit fabric, an annealer,
+         a crossbar, or a culture. The source doesn't change — only the evidence record does.</p>
       <div class="hero-cta">
         <div class="cmd">
           <span class="sig">$</span><code id="install-cmd-2">curl -fsSL get.vonneuro.com | sh</code>
