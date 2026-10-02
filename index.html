@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VonNeuro — an operating system for physical computers</title>
-<meta name="description" content="VonNeuro runs programs on p-bits, annealers, memristive networks, neuromorphic chips and living substrates. Hermes brings existing laboratory chips online as remote computational targets.">
-<meta property="og:title" content="VonNeuro — an operating system for physical computers">
+<title>VonNeuro — an operating system for heterogeneous multiprocessor systems</title>
+<meta name="description" content="VonNeuro runs programs on p-bits, annealers, memristive networks, neuromorphic chips and living substrates. Hermes brings laboratory chips online for characterization, computational-regime discovery and backend development.">
+<meta property="og:title" content="VonNeuro — an operating system for heterogeneous multiprocessor systems">
 <meta property="og:description" content="Relax it. Sample it. Or drive it. One language from silicon to tissue, with the thermodynamics carried through compilation.">
 <meta name="theme-color" content="#0C0A11">
 <meta name="color-scheme" content="dark">
@@ -372,7 +372,7 @@ footer a:hover{color:var(--arc-2)}
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <p class="eyebrow label"><span class="dot"></span> Operating system for physical computers · v0.9.3 preview</p>
+        <p class="eyebrow label"><span class="dot"></span> Operating system for heterogeneous multiprocessor systems · v0.9.3 preview</p>
         <h1 class="h-display hero-h"><em class="w1">Relax</em> it. <em class="w2">Sample</em> it.<br>Or keep it <em class="w3">driven</em>.</h1>
         <p class="lede hero-sub">
           Equilibrium is one regime, not the whole story. VonNeuro runs programs that minimise an
@@ -663,6 +663,23 @@ footer a:hover{color:var(--arc-2)}
         </div>
         <p class="tail">Hermes supplies the online endpoint, registry and job path. The scientific
           claim still comes from the device contract and the evidence reported by the hardware.</p>
+      </div>
+
+      <div class="callout rv">
+        <h4>From chip discovery to a working backend</h4>
+        <p>Hermes also provides the development loop for processors that do not yet have a settled
+          programming model. A prototype can begin with a partial device contract. Characterisation
+          runs then reveal which controls, observables and dynamical regimes are reproducible enough
+          to support computation, while the digital reference shows what the chip gains and where it
+          departs from the intended model.</p>
+        <div class="grid">
+          <div><b>discover</b><p>Explore relaxation, sampling and driven regimes to find useful computation in a new physical device.</p></div>
+          <div><b>characterise</b><p>Map response, noise, drift, stability, latency and energy evidence across the chip's operating range.</p></div>
+          <div><b>develop</b><p>Refine controls, calibration and compilation together, then promote the result into a versioned backend.</p></div>
+        </div>
+        <p class="tail">The same path supports a one-off research chip, successive fabrication
+          revisions and a production device: connect it, measure it, formalise its contract, and
+          improve the hardware against executable computational tests.</p>
       </div>
     </div>
   </div>
