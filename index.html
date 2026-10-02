@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VonNeuro — an operating system for physical computers</title>
-<meta name="description" content="VonNeuro runs programs on p-bits, annealers, memristive networks, neuromorphic chips and living substrates. Minimise, sample, or evolve — equilibrium is one regime among three, and every run reports its dissipation against a thermodynamic bound.">
+<meta name="description" content="VonNeuro runs programs on p-bits, annealers, memristive networks, neuromorphic chips and living substrates. Hermes brings existing laboratory chips online as remote computational targets.">
 <meta property="og:title" content="VonNeuro — an operating system for physical computers">
 <meta property="og:description" content="Relax it. Sample it. Or drive it. One language from silicon to tissue, with the thermodynamics carried through compilation.">
 <meta name="theme-color" content="#0C0A11">
@@ -355,6 +355,7 @@ footer a:hover{color:var(--arc-2)}
       <a href="#regimes">Regimes</a>
       <a href="#wetware">Wetware</a>
       <a href="#stack">Stack</a>
+      <a href="#hermes">Hermes</a>
       <a href="#volt">Volt</a>
       <a href="#physics">Physics</a>
       <a href="#evidence">Evidence</a>
@@ -378,6 +379,7 @@ footer a:hover{color:var(--arc-2)}
           objective, draw from a distribution, or evolve far from equilibrium — on p-bits, annealers,
           memristive networks, neuromorphic chips, a plain CPU, or a dish of living neurons. You
           state the intent and the contracts. The compiler finds the physics and shows its work.
+          Hermes brings existing laboratory chips online as remote VonNeuro targets.
         </p>
         <div class="hero-cta">
           <div class="cmd"><span class="sig">$</span><code id="install-cmd">curl -fsSL get.vonneuro.com | sh</code>
@@ -611,7 +613,8 @@ footer a:hover{color:var(--arc-2)}
           <span class="lv">L2</span>
           <div><h4>Kernel</h4><span class="who">vnk</span></div>
           <p>Event-driven scheduler with a 3.7 µs median dispatch, capability-based device
-             isolation, the device registry, and the ledger that meters every run.</p>
+             isolation, the device registry, Hermes remote endpoints, and the ledger that meters
+             every run.</p>
         </div>
         <div class="layer l1">
           <span class="lv">L1</span>
@@ -628,6 +631,38 @@ footer a:hover{color:var(--arc-2)}
              photonic operators, cultured neurons and reaction networks — or a digital reference
              that simulates any of them for when you need a baseline you can trust.</p>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ hermes ══════════════════ -->
+<section id="hermes" class="sec-pad">
+  <div class="wrap rail-row">
+    <div class="rail">
+      <span class="rail-tick"></span>
+      <span class="label">Remote hardware</span>
+      <p class="rail-note">The chip can stay on the laboratory bench and still become a VonNeuro target.</p>
+    </div>
+    <div class="col">
+      <h2 class="h-sec">Bring an existing chip online with Hermes</h2>
+      <p class="lede">Hermes is the VonNeuro device server. It connects existing hardware —
+        including one-off and experimental laboratory chips — to the online runtime without asking
+        the laboratory to redesign the device around a new computer architecture.</p>
+
+      <div class="callout rv">
+        <h4>The device stays in your laboratory</h4>
+        <p>A lightweight adapter translates the controls and readouts already used in the lab into
+          a versioned VonNeuro device contract, then registers that device with Hermes. A Volt
+          program can target it as a remote backend, while results return with the calibration,
+          timing, provenance and energy evidence available for that run.</p>
+        <div class="grid">
+          <div><b>connect</b><p>Keep the existing control stack and expose only the operations and measurements the chip already supports.</p></div>
+          <div><b>describe</b><p>Publish capabilities, parameter ranges, topology and current calibration as a machine-readable contract.</p></div>
+          <div><b>run</b><p>Hermes receives a compiled job, dispatches it to the laboratory device and returns outputs with its evidence record.</p></div>
+        </div>
+        <p class="tail">Hermes supplies the online endpoint, registry and job path. The scientific
+          claim still comes from the device contract and the evidence reported by the hardware.</p>
       </div>
     </div>
   </div>
@@ -976,7 +1011,7 @@ $ vnstat --run 4417 --watch
       </div>
       <div>
         <h5>Product</h5>
-        <ul><li><a href="#regimes">Regimes</a></li><li><a href="#wetware">Wetware</a></li><li><a href="#stack">Architecture</a></li>
+        <ul><li><a href="#regimes">Regimes</a></li><li><a href="#wetware">Wetware</a></li><li><a href="#stack">Architecture</a></li><li><a href="#hermes">Hermes server</a></li>
             <li><a href="#volt">Volt language</a></li><li><a href="#substrates">Substrate support</a></li></ul>
       </div>
       <div>
