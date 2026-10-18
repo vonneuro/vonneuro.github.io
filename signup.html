@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign up · VonNeuro Messenger</title>
+<meta name="description" content="Create a free vonNeuro Messenger account and request the Python client to run experiments on our memristor and RC bench.">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0C0A11; --panel:#16121F; --line:#2A2437; --txt:#EFEDF4; --txt-mid:#ADA6C0; --txt-soft:#837B99;
+  --arc:#6B4DFF; --arc-2:#A492FF; --arc-dim:#6B4DFF22; --ok:#5FD4C4; --heat:#E08A3C;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif; --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --f-label:"Martian Mono",ui-monospace,monospace; --f-code:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--f-body);font-size:16px;line-height:1.55}
+a{color:var(--arc-2)}
+.wrap{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+header a.home{display:flex;align-items:center;gap:10px;color:var(--txt);text-decoration:none;font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
+header img{width:28px;height:28px}
+.label{font-family:var(--f-label);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-soft)}
+h1{font-family:var(--f-display);font-weight:650;font-variation-settings:"wdth" 104;font-size:clamp(1.9rem,4.6vw,2.6rem);letter-spacing:-.025em;line-height:1.1;margin:.35rem 0 .8rem}
+.lede{color:var(--txt-mid);margin:0 0 1.4rem;max-width:60ch}
+.status{border:1px solid var(--line);border-left:2px solid var(--arc);background:var(--panel);border-radius:3px;padding:12px 14px;font-size:14.5px;color:var(--txt-mid);margin-bottom:22px}
+.status.ok{border-left-color:var(--ok)} .status.off{border-left-color:var(--heat)}
+form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}
+label{display:flex;flex-direction:column;gap:6px;min-width:0;font-family:var(--f-label);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-soft)}
+label .hint{font-family:var(--f-body);font-size:12.5px;letter-spacing:0;text-transform:none;color:var(--txt-soft)}
+input,textarea{width:100%;font-family:var(--f-body);font-size:15px;color:var(--txt);background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:9px 11px}
+textarea{min-height:80px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--arc);box-shadow:0 0 0 3px var(--arc-dim)}
+.wide{grid-column:1/-1}
+.sep{grid-column:1/-1;border-top:1px solid var(--line);margin:6px 0 0;padding-top:12px}
+.actions{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-body);font-size:14.5px;font-weight:500;padding:10px 18px;border-radius:2px;border:1px solid var(--arc);background:var(--arc);color:#fff;cursor:pointer;text-decoration:none}
+.btn:hover{background:#7C60FF;border-color:#7C60FF}
+.btn[disabled]{opacity:.55;cursor:default}
+.btn-ghost{background:transparent;color:var(--txt);border-color:var(--line)}
+.error{color:#FF9C8A;font-size:14px;margin:0}
+.note{color:var(--txt-soft);font-size:13.5px;margin:0}
+.done{border:1px solid var(--line);border-left:2px solid var(--ok);background:var(--panel);border-radius:3px;padding:20px 22px}
+.done h2{font-family:var(--f-display);font-weight:600;font-size:1.3rem;margin:0 0 .6rem}
+.done ol{padding-left:1.2rem;margin:.4rem 0 0;color:var(--txt-mid)} .done li{margin:.5rem 0}
+pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:10px 12px;overflow-x:auto;color:var(--txt);margin:.5rem 0 0}
+.mono{font-family:var(--f-code);font-size:.92em}
+.hidden{display:none}
+@media (max-width:640px){ form{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">VonNeuro</a>
+    <a href="./#messenger">Messenger</a>
+  </header>
+
+  <span class="label">vonNeuro Messenger · sign up</span>
+  <h1>Run experiments on real devices.</h1>
+  <p class="lede">A free account gives you time on our bench: 16 memristors and 16 RC coprocessors you can
+    probe from Python, and an early version of the VOLT language that runs on them. Add your GitHub
+    username to also get the private Python client repository.</p>
+
+  <div class="status" id="status">Checking that the bench server is online…</div>
+
+  <form id="signup" novalidate>
+    <label>Username<input name="username" autocomplete="username" required minlength="3" maxlength="32"
+      pattern="[A-Za-z0-9_.\-]+"><span class="hint">3–32 characters: letters, digits, _ . -</span></label>
+    <label>Email<input name="email" type="email" autocomplete="email" required></label>
+    <label>Password<input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72"><span class="hint">8–72 characters</span></label>
+    <label>Repeat password<input name="password2" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label>
+    <div class="sep label">For the Python client (optional)</div>
+    <label>GitHub username<input name="github" autocomplete="off" maxlength="39" pattern="[A-Za-z0-9](?:-?[A-Za-z0-9])*" placeholder="e.g. octocat"><span class="hint">We invite it to github.com/vonneuro/messenger</span></label>
+    <label>Institution or company<input name="affiliation" autocomplete="organization"></label>
+    <label class="wide">What would you like to run?<textarea name="purpose" maxlength="450"
+      placeholder="Memristor I–V studies, VOLT programs on the RC array, p-bit sampling…"></textarea></label>
+    <div class="actions">
+      <button class="btn" type="submit" id="submit">Create my account</button>
+      <p class="error" id="error" role="alert"></p>
+    </div>
+  </form>
+
+  <div class="done hidden" id="done">
+    <h2>Welcome, <span id="done-name"></span>.</h2>
+    <p class="note">Your account is ready, with <span id="done-time">1 hour</span> of free bench time.</p>
+    <ol>
+      <li><b>Sign in</b> to the dashboard: <a id="done-login" href="#">Messenger login</a>. The same account works from Python and in the game.</li>
+      <li id="done-github"><b>Watch your email for GitHub's invitation</b> to <span class="mono">vonneuro/messenger</span> (for <span id="done-gh"></span>). We send it by hand, usually within a working day; then accept it.</li>
+      <li><b>Install the client</b> once you have access:
+        <pre>git clone https://github.com/vonneuro/messenger.git
+cd messenger
+pip install -e .
+python examples/bench_tour.py --user <span id="done-user"></span></pre>
+        The repository's <span class="mono">docs/GETTING_STARTED.md</span> walks through your first measurements.</li>
+      <li><b>Need more than your free hour?</b> Ask from <i>Usage &amp; pricing</i> on the dashboard.</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+(function () {
+  var MESSENGER = "https://messenger.vonneuro.com";
+  var to = ["fcaravelli", "np.institute"].join("@");  // assembled to keep it away from harvesters
+  var form = document.getElementById("signup"), status = document.getElementById("status");
+  var error = document.getElementById("error"), submit = document.getElementById("submit");
+  var online = false;
+
+  function setStatus(text, kind) { status.innerHTML = text; status.className = "status " + (kind || ""); }
+  function hours(seconds) { return seconds >= 3600 ? (seconds / 3600) + " hour" + (seconds === 3600 ? "" : "s") : (seconds / 60) + " minutes"; }
+
+  // Is the bench server up? It answers /api/billing/pricing to anyone, cross-site allowed.
+  var probe = window.AbortController ? new AbortController() : null;
+  var timer = setTimeout(function () { if (probe) probe.abort(); }, 6000);
+  fetch(MESSENGER + "/api/billing/pricing", {signal: probe && probe.signal})
+    .then(function (r) { return r.json(); })
+    .then(function (p) {
+      clearTimeout(timer);
+      online = true;
+      document.getElementById("done-time").textContent = hours(p.trial_seconds);
+      setStatus(p.free ? "The bench server is online. Measuring is <b>free</b> during the prototype: " + hours(p.trial_seconds) +
+        " of compute time per account, and more on request." : "The bench server is online.", "ok");
+    })
+    .catch(function () {
+      clearTimeout(timer);
+      setStatus("The bench server is offline at the moment, so accounts cannot be created here right now. " +
+        "Submit the form anyway and your email app will open with the request, or write to <a href=\"mailto:" + to + "\">" + to + "</a>.", "off");
+      submit.textContent = "Email my request";
+    });
+
+  function emailRequest(f, purpose) {
+    var body = ["Please create my vonNeuro Messenger account" + (f.github.value.trim() ? " and invite me to github.com/vonneuro/messenger." : "."), "",
+      "Preferred username: " + f.username.value.trim(), "Email: " + f.email.value.trim(),
+      "GitHub username: " + (f.github.value.trim() || "-"), "What I would like to run: " + (purpose || "-")].join("\n");
+    window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent("vonNeuro Messenger sign-up: " + f.username.value.trim()) +
+      "&body=" + encodeURIComponent(body);
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    error.textContent = "";
+    var f = form.elements;
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (f.password.value !== f.password2.value) { error.textContent = "The two passwords differ."; return; }
+    var purpose = f.purpose.value.trim();
+    if (f.affiliation.value.trim()) purpose = (purpose ? purpose + " " : "") + "(" + f.affiliation.value.trim() + ")";
+    if (!online) { emailRequest(f, purpose); return; }
+    submit.disabled = true;
+    submit.textContent = "Creating…";
+    fetch(MESSENGER + "/api/auth/register", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({username: f.username.value.trim(), email: f.email.value.trim(), password: f.password.value,
+                            github_username: f.github.value.trim() || null, purpose: purpose.slice(0, 500) || null})
+    }).then(function (r) {
+      return r.json().then(function (body) { return {ok: r.ok, body: body}; });
+    }).then(function (res) {
+      if (!res.ok) {
+        var d = res.body.detail;
+        error.textContent = Array.isArray(d) ? d.map(function (x) { return (x.loc ? x.loc[x.loc.length - 1] + ": " : "") + x.msg; }).join("; ")
+          : (d || "Sign-up failed; please try again.");
+        submit.disabled = false;
+        submit.textContent = "Create my account";
+        return;
+      }
+      form.classList.add("hidden");
+      status.classList.add("hidden");
+      document.getElementById("done-name").textContent = res.body.username;
+      document.getElementById("done-user").textContent = res.body.username;
+      document.getElementById("done-login").href = MESSENGER + "/login";
+      if (res.body.github_username) document.getElementById("done-gh").textContent = res.body.github_username;
+      else document.getElementById("done-github").classList.add("hidden");
+      document.getElementById("done").classList.remove("hidden");
+    }).catch(function () {
+      error.innerHTML = "The bench server did not answer. Try again in a minute, or <a href=\"mailto:" + to + "\">email us</a>.";
+      submit.disabled = false;
+      submit.textContent = "Create my account";
+    });
+  });
+})();
+</script>
+</body>
+</html>
