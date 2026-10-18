@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sign up · VonNeuro Messenger</title>
-<meta name="description" content="Create a free vonNeuro Messenger account and request the Python client to run experiments on our memristor and RC bench.">
+<meta name="description" content="Create a vonNeuro Messenger account and request the Python client to run experiments on our memristor and RC bench.">
 <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,7 +62,7 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
 
   <span class="label">vonNeuro Messenger · sign up</span>
   <h1>Run experiments on real devices.</h1>
-  <p class="lede">A free account gives you time on our bench: 16 memristors and 16 RC coprocessors you can
+  <p class="lede">An account gives you time on our bench: 16 memristors and 16 RC coprocessors you can
     probe from Python, and an early version of the VOLT language that runs on them. Add your GitHub
     username to also get the private Python client repository.</p>
 
@@ -87,7 +87,7 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
 
   <div class="done hidden" id="done">
     <h2>Welcome, <span id="done-name"></span>.</h2>
-    <p class="note">Your account is ready, with <span id="done-time">1 hour</span> of free bench time.</p>
+    <p class="note">Your account is ready, with <span id="done-time">1 hour</span> of bench time.</p>
     <ol>
       <li><b>Sign in</b> to the dashboard: <a id="done-login" href="#">Messenger login</a>. The same account works from Python and in the game.</li>
       <li id="done-github"><b>Watch your email for GitHub's invitation</b> to <span class="mono">vonneuro/messenger</span> (for <span id="done-gh"></span>). We send it by hand, usually within a working day; then accept it.</li>
@@ -97,7 +97,7 @@ cd messenger
 pip install -e .
 python examples/bench_tour.py --user <span id="done-user"></span></pre>
         The repository's <span class="mono">docs/GETTING_STARTED.md</span> walks through your first measurements.</li>
-      <li><b>Need more than your free hour?</b> Ask from <i>Usage &amp; pricing</i> on the dashboard.</li>
+      <li><b>Need more than your hour?</b> Ask from <i>Usage</i> on the dashboard.</li>
     </ol>
   </div>
 </div>
@@ -122,8 +122,7 @@ python examples/bench_tour.py --user <span id="done-user"></span></pre>
       clearTimeout(timer);
       online = true;
       document.getElementById("done-time").textContent = hours(p.trial_seconds);
-      setStatus(p.free ? "The bench server is online. Measuring is <b>free</b> during the prototype: " + hours(p.trial_seconds) +
-        " of compute time per account, and more on request." : "The bench server is online.", "ok");
+      setStatus("The bench server is online. Each account gets " + hours(p.trial_seconds) + " of bench time, and more on request.", "ok");
     })
     .catch(function () {
       clearTimeout(timer);
