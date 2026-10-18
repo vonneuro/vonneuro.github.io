@@ -530,7 +530,7 @@ footer a:hover{color:var(--arc-2)}
       <h2 class="h-sec">What VonNeuro does today</h2>
       <p class="lede">VonNeuro turns unconventional physical devices into things you can program and
         measure from a computer. Our first bench prototype multiplexes 16 RC coprocessors and 16
-        memristors behind one laboratory instrument, next to an Arduino p-bit sampler, all online
+        memristors behind one laboratory instrument, next to a hardware p-bit sampler, all online
         through vonNeuro Messenger. You write a program in an early version of VOLT, pick any of the
         32 devices, and get back the measurement — raw samples, settings and provenance included.</p>
 
@@ -581,12 +581,11 @@ footer a:hover{color:var(--arc-2)}
         </article>
 
         <article class="today-item">
-          <span class="kw">p-bits · arduino</span>
-          <h3>A 16-spin sampler on a microcontroller</h3>
-          <p>An Arduino Nano runs Gibbs sampling over up to sixteen Ising spins and addresses the
-             two device multiplexers. Load couplings, set a temperature, and stream spin samples
-             through Messenger.</p>
-          <p class="foot">Software p-bits on physical hardware · mux addressing of 32 devices</p>
+          <span class="kw">p-bits · hardware sampler</span>
+          <h3>A 16-p-bit hardware sampler</h3>
+          <p>A dedicated hardware sampler runs Gibbs sampling over up to sixteen Ising spins. Load
+             couplings, set a temperature, and stream spin samples through Messenger.</p>
+          <p class="foot">16 p-bits · Gibbs sampling on dedicated hardware</p>
         </article>
 
         <article class="today-item">
@@ -744,7 +743,7 @@ c.volt_run(program, {<span class="s">"u"</span>: <span class="n">0.5</span>}, <s
       <span class="rail-tick"></span>
       <span class="label">Regimes</span>
       <p class="rail-note">The semantic core is small on purpose. Everything reduces to these three.</p>
-      <p class="rail-note">Today, small instances of each: Ising objectives, the Arduino Gibbs sampler, driven memristor and spiking emulators.</p>
+      <p class="rail-note">Today, small instances of each: Ising objectives, the hardware Gibbs sampler, driven memristor and spiking emulators.</p>
     </div>
     <div class="col">
       <h2 class="h-sec">Three ways matter can be useful</h2>
@@ -912,7 +911,7 @@ c.volt_run(program, {<span class="s">"u"</span>: <span class="n">0.5</span>}, <s
         </div>
         <div class="layer l0">
           <span class="lv">L0</span>
-          <div><h4>Matter</h4><span class="who">fluctuations, conductances, light, cells</span><br><span class="pill now">memristors · RC · Arduino</span></div>
+          <div><h4>Matter</h4><span class="who">fluctuations, conductances, light, cells</span><br><span class="pill now">memristors · RC · p-bits</span></div>
           <p>Stochastic bits, annealing hardware, adaptive networks, spiking silicon, analog and
              photonic operators, cultured neurons and reaction networks — or a digital reference
              that simulates any of them for when you need a baseline you can trust.</p>
@@ -1211,7 +1210,7 @@ $ vnstat --run 4417 --watch
       <span class="label">Support</span>
       <p class="rail-note">What runs where, in which regime, and how good the energy evidence is.</p>
       <span class="pill pre">roadmap</span>
-      <p class="rail-note">Planned backends. Today's bench: 16 RC coprocessors and 16 memristors multiplexed, LED–RC, Arduino p-bits, via Messenger.</p>
+      <p class="rail-note">Planned backends. Today's bench: 16 RC coprocessors and 16 memristors multiplexed, LED–RC, a hardware p-bit sampler, via Messenger.</p>
     </div>
     <div class="col">
       <h2 class="h-sec">Cross-platform, stated plainly</h2>
@@ -1228,7 +1227,7 @@ $ vnstat --run 4417 --watch
             <tr><td>16 memristors (devices 22, 23) on a multiplexer, Analog Discovery Studio</td><td class="mono">vn_hal · Messenger · VOLT 0.1</td><td><span class="mode m3">evolve</span></td><td>Terminal energy per run (∫V·I dt)</td><td><span class="pill now">measured</span></td></tr>
             <tr><td>16 series-RC coprocessors on a multiplexer</td><td class="mono">vn_hal · Messenger · VOLT 0.1</td><td><span class="mode m3">evolve</span></td><td>Source energy per run (∫V·I dt)</td><td><span class="pill now">measured</span></td></tr>
             <tr><td>LED–RC circuit</td><td class="mono">vn_hal · Messenger</td><td><span class="mode m3">evolve</span></td><td>Voltage measured; energy not yet</td><td><span class="pill now">measured</span></td></tr>
-            <tr><td>Arduino Nano · software p-bits + 16-ch mux</td><td class="mono">vn_hal/nano</td><td><span class="mode m2">sample</span></td><td>None</td><td><span class="pill now">running</span></td></tr>
+            <tr><td>Hardware p-bit sampler · 16 p-bits</td><td class="mono">vn_hal/nano</td><td><span class="mode m2">sample</span></td><td>None</td><td><span class="pill now">running</span></td></tr>
             <tr><td>CPU emulators — analog, memristor, p-bit, spiking</td><td class="mono">vn_hal/backends</td><td><span class="mode m2">sample</span> <span class="mode m3">evolve</span></td><td>None</td><td><span class="pill now">emulated</span></td></tr>
             <tr><td>GPU — CUDA, ROCm, Metal, Vulkan</td><td class="mono">vn-hal/gpu</td><td><span class="mode m1">minimise</span> <span class="mode m2">sample</span> <span class="mode m3">evolve</span></td><td>Board telemetry (planned)</td><td><span class="pill pre">planned</span></td></tr>
             <tr><td>p-bit fabric on FPGA</td><td class="mono">vn-hal/pbit</td><td><span class="mode m2">sample</span> <span class="mode m1">minimise</span></td><td>Rail measurement (planned)</td><td><span class="pill pre">planned</span></td></tr>
