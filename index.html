@@ -357,6 +357,14 @@ footer a:hover{color:var(--arc-2)}
 .loops figure{margin:0; border:1px solid var(--line-2); border-radius:2px; background:#100D18; padding:10px 10px 8px}
 .loops svg{width:100%; height:auto}
 .loops figcaption{font-family:var(--f-code); font-size:11px; color:var(--txt-soft); margin-top:6px; line-height:1.45}
+.game-videos{margin-top:26px; border:1px solid var(--line); border-radius:3px; background:var(--panel); padding:clamp(16px,2vw,24px)}
+.game-videos h3{font-family:var(--f-display); font-weight:600; font-size:1.16rem; margin:0 0 8px; color:#F8F6FC}
+.game-videos > p{margin:0 0 16px; font-size:15px; color:var(--txt-mid); max-width:76ch}
+.vid-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px}
+.vid-grid figure{margin:0}
+.vid-grid video{width:100%; aspect-ratio:16/9; display:block; border:1px solid var(--line); border-radius:2px; background:#000}
+.vid-grid figcaption{margin-top:8px; font-size:13.5px; color:var(--txt-soft); display:flex; gap:8px; align-items:center}
+@media (max-width:820px){ .vid-grid{grid-template-columns:1fr} }
 .status-note{margin-top:22px; display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; font-family:var(--f-code); font-size:12.6px; color:var(--txt-soft)}
 .pill.now{color:var(--ok); border-color:#5FD4C455; background:#5FD4C412}
 .rail .pill{margin-top:12px}
@@ -607,6 +615,26 @@ footer a:hover{color:var(--arc-2)}
              the source hash and the energy measured at the device terminals.</p>
           <p class="foot">Compiled to VNG · device contract checked · processing programs sandboxed</p>
         </article>
+      </div>
+
+      <div class="game-videos rv" id="live-vs-emulated">
+        <h3>The game, live vs emulated</h3>
+        <p>Each enemy chasing Francis runs on one of the bench's RC coprocessors. <b>Live</b>, the board measures
+          that coprocessor's real response to Francis's position and the enemy moves on it (label <span class="mono">LIVE</span>);
+          between measurements, and in the <b>emulated</b> run, a calibrated model of the same coprocessor decides
+          (<span class="mono">EMU</span>). Same level, same route, 30 seconds each, recorded in real time.</p>
+        <div class="vid-grid">
+          <figure>
+            <video controls muted loop playsinline preload="none" poster="assets/video/rc_live.jpg">
+              <source src="assets/video/rc_live.mp4" type="video/mp4"></video>
+            <figcaption><span class="pill now">live</span> RC coprocessors measured on the bench</figcaption>
+          </figure>
+          <figure>
+            <video controls muted loop playsinline preload="none" poster="assets/video/rc_emulated.jpg">
+              <source src="assets/video/rc_emulated.mp4" type="video/mp4"></video>
+            <figcaption><span class="pill pre">emulated</span> calibrated models, no hardware</figcaption>
+          </figure>
+        </div>
       </div>
 
       <p class="status-note"><span class="pill now">running now</span> Messenger, VOLT 0.1 on the
