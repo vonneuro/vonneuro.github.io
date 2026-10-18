@@ -109,8 +109,8 @@ section[data-neural-section].neural-active .rail > .label{color:var(--section-ac
 
 /* ── header ── */
 .hdr{
-  position:sticky; top:0; z-index:70; background:rgba(12,10,17,.72);
-  backdrop-filter:saturate(140%) blur(14px); -webkit-backdrop-filter:saturate(140%) blur(14px);
+  position:sticky; top:0; z-index:70; background:rgba(12,10,17,.9);
+  /* No backdrop blur: over the animated field it forces a re-blur on every frame. */
   border-bottom:1px solid var(--line-2); transition:background .3s ease, border-color .3s ease;
 }
 .hdr.stuck{background:rgba(12,10,17,.92); border-bottom-color:var(--line)}
@@ -1590,74 +1590,128 @@ $ vnstat --run 4417 --watch
       }
     }
 
-    function drawDendrites(n) {
-      g.strokeStyle = n.charge > .12 ? rgba(n.color, Math.min(.24, .08 + n.charge * .075))
-                                     : "rgba(150,136,199,.105)";
-      g.lineWidth = .52 + Math.min(.24, n.charge * .08);
+    // Adds a soma's dendrites to the current path (no stroke), so many can share one stroke.
+    function traceDendrites(n) {
       for (var i = 0; i < n.branches.length; i++) {
         var b = n.branches[i], a = b.a + Math.sin(n.phase) * .08;
         var x1 = n.x + Math.cos(a) * b.len * .58, y1 = n.y + Math.sin(a) * b.len * .58;
         var x2 = n.x + Math.cos(a + .12) * b.len, y2 = n.y + Math.sin(a + .12) * b.len;
-        g.beginPath(); g.moveTo(n.x, n.y); g.quadraticCurveTo(x1, y1, x2, y2); g.stroke();
+        g.moveTo(n.x, n.y); g.quadraticCurveTo(x1, y1, x2, y2);
         if (b.fork) {
-          g.beginPath(); g.moveTo(x1, y1);
-          g.lineTo(x2 + Math.cos(a + .7) * b.len * .34, y2 + Math.sin(a + .7) * b.len * .34); g.stroke();
+          g.moveTo(x1, y1);
+          g.lineTo(x2 + Math.cos(a + .7) * b.len * .34, y2 + Math.sin(a + .7) * b.len * .34);
         }
       }
+    }
+    function drawDendrites(n) {
+      g.strokeStyle = rgba(n.color, Math.min(.24, .08 + n.charge * .075));
+      g.lineWidth = .52 + Math.min(.24, n.charge * .08);
+      g.beginPath(); traceDendrites(n); g.stroke();
+    }
+
+    /* Glows are pre-rendered once per colour and stamped with drawImage: a canvas
+       shadowBlur or a fresh radial gradient per element per frame is far costlier. */
+    var glowCache = Object.create(null), GLOW_SIZE = 64;
+    function glowSprite(rgb) {
+      var key = rgb.join(","), sprite = glowCache[key];
+      if (sprite) return sprite;
+      sprite = document.createElement("canvas"); sprite.width = sprite.height = GLOW_SIZE;
+      var sg = sprite.getContext("2d"), r = GLOW_SIZE / 2;
+      var grad = sg.createRadialGradient(r, r, 0, r, r, r);
+      grad.addColorStop(0, rgba(rgb, 1)); grad.addColorStop(.35, rgba(rgb, .45)); grad.addColorStop(1, rgba(rgb, 0));
+      sg.fillStyle = grad; sg.fillRect(0, 0, GLOW_SIZE, GLOW_SIZE);
+      return (glowCache[key] = sprite);
+    }
+    function stampGlow(rgb, x, y, radius, alpha) {
+      g.globalAlpha = alpha; g.drawImage(glowSprite(rgb), x - radius, y - radius, radius * 2, radius * 2); g.globalAlpha = 1;
     }
 
     function drawPulse(p) {
       var c = curve(edges[p.edge]), head = pointOn(c, p.from === edges[p.edge].a ? p.t : 1 - p.t);
       var dir = p.from === edges[p.edge].a ? 1 : -1;
-      g.save(); g.globalCompositeOperation = "lighter";
       g.strokeStyle = rgba(p.color, .52);
-      g.lineWidth = 1.45 + p.energy * .72; g.lineCap = "round";
+      g.lineWidth = 1.45 + p.energy * .72;
       g.beginPath();
       for (var s = 0; s < 7; s++) {
         var tt = clamp((p.from === edges[p.edge].a ? p.t : 1 - p.t) - dir * s * .012, 0, 1);
         var q = pointOn(c, tt); if (s === 0) g.moveTo(q.x, q.y); else g.lineTo(q.x, q.y);
       }
       g.stroke();
-      g.shadowColor = "rgb(" + p.color.join(",") + ")"; g.shadowBlur = 13;
+      stampGlow(p.color, head.x, head.y, 9 + p.energy * 3, .85);
       g.fillStyle = rgba(p.color, .98);
       g.beginPath(); g.arc(head.x, head.y, 1.8 + p.energy * .95, 0, TAU); g.fill();
-      g.restore();
     }
 
+    /* Resting edges, dendrites and somata share a few styles, so they go out in a handful
+       of batched paths; only charged (coloured) elements are stroked one by one. */
+    var EDGE_BUCKETS = [[.105, .62], [.135, .74], [.165, .86]];  // [alpha, width] of resting edges
     function draw(now, dt) {
       g.clearRect(0, 0, W, H); updateNodePositions(now);
-      for (var i = 0; i < edges.length; i++) {
-        var e = edges[i], c = curve(e); pathCurve(c);
-        var liveEdge = (nodes[e.a].charge + nodes[e.b].charge) * .025;
-        var edgeColor = nodes[e.a].charge > nodes[e.b].charge ? nodes[e.a].color : nodes[e.b].color;
-        g.strokeStyle = liveEdge > .008 ? rgba(edgeColor, Math.min(.22, e.alpha + liveEdge))
-                                        : "rgba(147,132,193," + e.alpha.toFixed(3) + ")";
-        g.lineWidth = e.width; g.stroke();
-      }
-      for (var n = 0; n < nodes.length; n++) drawDendrites(nodes[n]);
-      for (var p = 0; p < pulses.length; p++) drawPulse(pulses[p]);
-      for (var j = 0; j < nodes.length; j++) {
-        var q = nodes[j], glow = clamp(q.charge, 0, 1.4);
-        if (glow > .06) {
-          var rad = g.createRadialGradient(q.x, q.y, 0, q.x, q.y, 9 + glow * 8);
-          rad.addColorStop(0, rgba(q.color, Math.min(.34, .18 * glow)));
-          rad.addColorStop(1, rgba(q.color, 0));
-          g.fillStyle = rad; g.beginPath(); g.arc(q.x, q.y, 9 + glow * 8, 0, TAU); g.fill();
+      g.lineCap = "round";
+      for (var bucket = 0; bucket < EDGE_BUCKETS.length; bucket++) {
+        g.beginPath();
+        for (var i = 0; i < edges.length; i++) {
+          var e = edges[i];
+          if ((nodes[e.a].charge + nodes[e.b].charge) * .025 > .008) continue;
+          if (Math.min(EDGE_BUCKETS.length - 1, ((e.alpha - .09) / .085 * EDGE_BUCKETS.length) | 0) !== bucket) continue;
+          var c = curve(e); g.moveTo(c.a.x, c.a.y); g.quadraticCurveTo(c.cx, c.cy, c.b.x, c.b.y);
         }
-        g.fillStyle = glow > .16 ? rgba(q.color, Math.min(.9, .30 + glow * .38))
-                                : "rgba(164,146,255,.28)";
-        g.beginPath(); g.arc(q.x, q.y, q.r + glow * .65, 0, TAU); g.fill();
-        g.strokeStyle = glow > .08 ? rgba(q.color, Math.min(.34, .15 + glow * .11))
-                                  : "rgba(210,201,255,.19)";
-        g.lineWidth = .55;
-        g.beginPath(); g.arc(q.x, q.y, q.r + 2.2, 0, TAU); g.stroke();
+        g.strokeStyle = "rgba(147,132,193," + EDGE_BUCKETS[bucket][0] + ")";
+        g.lineWidth = EDGE_BUCKETS[bucket][1]; g.stroke();
+      }
+      for (var k = 0; k < edges.length; k++) {
+        var le = edges[k], liveEdge = (nodes[le.a].charge + nodes[le.b].charge) * .025;
+        if (liveEdge <= .008) continue;
+        var edgeColor = nodes[le.a].charge > nodes[le.b].charge ? nodes[le.a].color : nodes[le.b].color;
+        pathCurve(curve(le));
+        g.strokeStyle = rgba(edgeColor, Math.min(.22, le.alpha + liveEdge)); g.lineWidth = le.width; g.stroke();
+      }
+      // Resting dendrites in one path; charged ones individually.
+      g.beginPath();
+      for (var n = 0; n < nodes.length; n++) if (nodes[n].charge <= .12) traceDendrites(nodes[n]);
+      g.strokeStyle = "rgba(150,136,199,.105)"; g.lineWidth = .52; g.stroke();
+      for (var m = 0; m < nodes.length; m++) if (nodes[m].charge > .12) drawDendrites(nodes[m]);
+
+      g.globalCompositeOperation = "lighter";
+      for (var p = 0; p < pulses.length; p++) drawPulse(pulses[p]);
+      g.globalCompositeOperation = "source-over";
+
+      // Somata: resting ones batched, glowing ones individually.
+      g.beginPath();
+      for (var j = 0; j < nodes.length; j++) {
+        var q = nodes[j];
+        if (q.charge > .06) continue;
+        g.moveTo(q.x + q.r, q.y); g.arc(q.x, q.y, q.r, 0, TAU);
+      }
+      g.fillStyle = "rgba(164,146,255,.28)"; g.fill();
+      g.beginPath();
+      for (var jj = 0; jj < nodes.length; jj++) {
+        var qq = nodes[jj];
+        if (qq.charge > .08) continue;
+        g.moveTo(qq.x + qq.r + 2.2, qq.y); g.arc(qq.x, qq.y, qq.r + 2.2, 0, TAU);
+      }
+      g.strokeStyle = "rgba(210,201,255,.19)"; g.lineWidth = .55; g.stroke();
+      for (var u = 0; u < nodes.length; u++) {
+        var s = nodes[u], glow = clamp(s.charge, 0, 1.4);
+        if (glow <= .06) continue;
+        stampGlow(s.color, s.x, s.y, 9 + glow * 8, Math.min(.34, .18 * glow) * 1.6);
+        g.fillStyle = glow > .16 ? rgba(s.color, Math.min(.9, .30 + glow * .38)) : "rgba(164,146,255,.28)";
+        g.beginPath(); g.arc(s.x, s.y, s.r + glow * .65, 0, TAU); g.fill();
+        if (glow > .08) {
+          g.strokeStyle = rgba(s.color, Math.min(.34, .15 + glow * .11)); g.lineWidth = .55;
+          g.beginPath(); g.arc(s.x, s.y, s.r + 2.2, 0, TAU); g.stroke();
+        }
       }
     }
 
+    // The field drifts slowly: 30 frames per second look the same as 60-120 at a fraction of the cost.
+    var FRAME_MS = 1000 / 30;
     function frame(now) {
       if (!live) return;
-      var dt = lastFrame ? Math.min(42, now - lastFrame) : 16.67; lastFrame = now;
-      update(dt); draw(now, dt); raf = requestAnimationFrame(frame);
+      raf = requestAnimationFrame(frame);
+      if (lastFrame && now - lastFrame < FRAME_MS - 1) return;
+      var dt = lastFrame ? Math.min(66, now - lastFrame) : FRAME_MS; lastFrame = now;
+      update(dt); draw(now, dt);
     }
     function play() { if (live || reduce) return; live = true; lastFrame = 0; raf = requestAnimationFrame(frame); }
     function pause() { live = false; if (raf) cancelAnimationFrame(raf); raf = null; }
