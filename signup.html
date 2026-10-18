@@ -104,7 +104,7 @@ python examples/bench_tour.py --user <span id="done-user"></span></pre>
 
 <script>
 (function () {
-  var MESSENGER = "https://messenger.vonneuro.com";
+  var MESSENGER = "https://series-marina-gigantic.ngrok-free.dev";
   var to = ["fcaravelli", "np.institute"].join("@");  // assembled to keep it away from harvesters
   var form = document.getElementById("signup"), status = document.getElementById("status");
   var error = document.getElementById("error"), submit = document.getElementById("submit");
@@ -116,7 +116,7 @@ python examples/bench_tour.py --user <span id="done-user"></span></pre>
   // Is the bench server up? It answers /api/billing/pricing to anyone, cross-site allowed.
   var probe = window.AbortController ? new AbortController() : null;
   var timer = setTimeout(function () { if (probe) probe.abort(); }, 6000);
-  fetch(MESSENGER + "/api/billing/pricing", {signal: probe && probe.signal})
+  fetch(MESSENGER + "/api/billing/pricing", {signal: probe && probe.signal, headers: {"ngrok-skip-browser-warning": "1"}})
     .then(function (r) { return r.json(); })
     .then(function (p) {
       clearTimeout(timer);
@@ -128,7 +128,7 @@ python examples/bench_tour.py --user <span id="done-user"></span></pre>
     .catch(function () {
       clearTimeout(timer);
       setStatus("The bench server is offline at the moment, so accounts cannot be created here right now. " +
-        "Submit the form anyway and your email app will open with the request, or write to <a href=\"mailto:" + to + "\">" + to + "</a>.", "off");
+        "Submit the form anyway and your email app will open with the request, or <a href=\"mailto:" + to + "\">email us</a>.", "off");
       submit.textContent = "Email my request";
     });
 
@@ -152,7 +152,7 @@ python examples/bench_tour.py --user <span id="done-user"></span></pre>
     submit.disabled = true;
     submit.textContent = "Creating…";
     fetch(MESSENGER + "/api/auth/register", {
-      method: "POST", headers: {"Content-Type": "application/json"},
+      method: "POST", headers: {"Content-Type": "application/json", "ngrok-skip-browser-warning": "1"},
       body: JSON.stringify({username: f.username.value.trim(), email: f.email.value.trim(), password: f.password.value,
                             github_username: f.github.value.trim() || null, purpose: purpose.slice(0, 500) || null})
     }).then(function (r) {
