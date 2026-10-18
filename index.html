@@ -536,11 +536,24 @@ footer a:hover{color:var(--arc-2)}
     </div>
     <div class="col">
       <h2 class="h-sec">What VonNeuro does today</h2>
-      <p class="lede">VonNeuro turns unconventional physical devices into things you can program and
-        measure from a computer. Our first bench prototype multiplexes 16 RC coprocessors and 16
-        memristors behind one laboratory instrument, next to a hardware p-bit sampler, all online
-        through vonNeuro Messenger. You write a program in an early version of VOLT, pick any of the
-        32 devices, and get back the measurement — raw samples, settings and provenance included.</p>
+      <p class="lede">Computing is becoming heterogeneous. CPUs already share the work with GPUs and
+        accelerators; next to them sits a growing family of physical processors — analog circuits,
+        memristive networks, stochastic samplers — that compute by letting matter relax, fluctuate or
+        respond, rather than by stepping through instructions. VonNeuro is developing a pancomputing
+        approach for that world: a common language in which a task states what it needs, so it can be
+        decided which processor should run it, why, and how — and a record of what each run cost and how
+        far its answer can be trusted.</p>
+      <p class="lede">Bringing analog and stochastic computing back is a resource for the future, not a
+        nostalgia. Physics can sample, relax to a minimum or filter a signal in time with far less energy
+        than a digital machine simulating the same process. That saving is a promise we measure, not a
+        result we claim yet, and the answers such hardware gives are statistical: certifying that they
+        meet what a program declared is the part we are building now.</p>
+      <p class="lede">The bench is a proof of concept, not a product: a first prototype that multiplexes
+        16 RC coprocessors and 16 memristors behind one laboratory instrument, next to a hardware p-bit
+        sampler, all online through vonNeuro Messenger. It exists to show that the whole loop works on
+        real, imperfect devices.
+        You write a program in an early version of VOLT, pick any of the 32 devices, and get back the
+        measurement — raw samples, settings and provenance included.</p>
 
       <div class="today rv">
         <article class="today-item wide">
@@ -597,12 +610,16 @@ footer a:hover{color:var(--arc-2)}
         </article>
 
         <article class="today-item">
-          <span class="kw">reservoir · game</span>
-          <h3>A physical circuit steers a game</h3>
-          <p>In <em>I Shall Survive</em>, enemies move according to a memristor and an LED–RC
-             circuit driven live by the player's position. A trained linear readout of the measured
-             response chose the right direction in 46 of 46 decisions in a scripted test run.</p>
-          <p class="foot">Godot · live bench service · measured, not emulated</p>
+          <span class="kw">a small, complete example · game</span>
+          <h3>One game, every ingredient</h3>
+          <p><em>I Shall Survive</em> is deliberately small, but it exercises the whole problem. Enemies chase
+             Francis on RC coprocessors measured live on the bench, and fall back to calibrated emulators
+             while the board is busy. They decide when to guard with a real memristor, a hardware p-bit
+             sampler can supply their stochastic choices, and a rescue drone flies on two RC
+             coprocessors. Every decision raises the questions VonNeuro is built to answer: which device
+             should take this task, what happens when it is unavailable, and is the physical answer still
+             the right one.</p>
+          <p class="foot">Godot · live bench service · live and emulated side by side, below</p>
         </article>
 
         <article class="today-item">
