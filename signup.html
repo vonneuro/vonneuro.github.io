@@ -74,8 +74,8 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
     <label>Email<input name="email" type="email" autocomplete="email" required></label>
     <label>Password<input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72"><span class="hint">8–72 characters</span></label>
     <label>Repeat password<input name="password2" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label>
-    <div class="sep label">For the Python client (optional)</div>
-    <label>GitHub username<input name="github" autocomplete="off" maxlength="39" pattern="[A-Za-z0-9](?:-?[A-Za-z0-9])*" placeholder="e.g. octocat"><span class="hint">We invite it to github.com/vonneuro/messenger</span></label>
+    <div class="sep label">For the examples repository (optional)</div>
+    <label>GitHub username<input name="github" autocomplete="off" maxlength="39" pattern="[A-Za-z0-9](?:-?[A-Za-z0-9])*" placeholder="e.g. octocat"><span class="hint">The Python API is public; give a username to be invited to github.com/vonneuro/messenger, with the runnable examples and the full bench manual</span></label>
     <label>Institution or company<input name="affiliation" autocomplete="organization"></label>
     <label class="wide">What would you like to run?<textarea name="purpose" maxlength="450"
       placeholder="Memristor I–V studies, VOLT programs on the RC array, p-bit sampling…"></textarea></label>
@@ -90,13 +90,17 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
     <p class="note">Your account is ready, with <span id="done-time">1 hour</span> of bench time.</p>
     <ol>
       <li><b>Sign in</b> to the dashboard: <a id="done-login" href="#">Messenger login</a>. The same account works from Python and in the game.</li>
-      <li id="done-github"><b>Watch your email for GitHub's invitation</b> to <span class="mono">vonneuro/messenger</span> (for <span id="done-gh"></span>). We send it by hand, usually within a working day; then accept it.</li>
-      <li><b>Install the client</b> once you have access:
-        <pre>git clone https://github.com/vonneuro/messenger.git
-cd messenger
-pip install -e .
-python examples/bench_tour.py --user <span id="done-user"></span></pre>
-        The repository's <span class="mono">docs/GETTING_STARTED.md</span> walks through your first measurements.</li>
+      <li><b>Install the Python API</b> (public, Python 3.11 or newer) and sweep your first memristor:
+        <pre>pip install git+https://github.com/vonneuro/messenger-api.git
+
+from vonneuro_messenger import MessengerClient
+c = MessengerClient("https://series-marina-gigantic.ngrok-free.dev")
+c.login("<span id="done-user"></span>", "your-password")
+iv = c.memristor_array(3, amplitude=0.25)["memristor"]</pre>
+        Its <a href="https://github.com/vonneuro/messenger-api" rel="noopener">README</a> lists every method. No Python
+        installed? The <a href="https://series-marina-gigantic.ngrok-free.dev/python">Python lab</a> runs the same code in your browser.</li>
+      <li id="done-github"><b>Watch your email for GitHub's invitation</b> to <span class="mono">vonneuro/messenger</span> (for <span id="done-gh"></span>),
+        the repository with the runnable examples and the full bench manual. We send it by hand, usually within a working day.</li>
       <li><b>Need more than your hour?</b> Ask from <i>Usage</i> on the dashboard.</li>
     </ol>
   </div>
