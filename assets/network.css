@@ -41,6 +41,7 @@ code,.mono{font-family:var(--f-code);font-size:.92em}
 .dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--txt-soft)}
 .dot.online{color:var(--ok)} .dot.online::before{background:var(--ok)}
 .dot.offline{color:var(--heat)} .dot.offline::before{background:var(--heat)}
+.dot.restricted{color:var(--arc-2)} .dot.restricted::before{background:var(--arc-2)}
 .usage{font-size:12.5px;color:var(--txt-soft);margin-top:auto}
 table{width:100%;border-collapse:collapse;font-size:14px;margin:.4rem 0 1rem}
 th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}

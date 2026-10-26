@@ -27,6 +27,8 @@
   <div id="body" class="hidden">
     <div class="facts" id="facts"></div>
 
+    <section id="about" class="hidden" style="margin-top:1.5rem; border-top:1px solid var(--line); padding-top:.5rem;"></section>
+
     <h2>Operations</h2>
     <p>The hub checks every parameter against these ranges before a job is queued; the device's own driver then
       checks the job again before anything is driven.</p>
@@ -92,13 +94,20 @@
       document.getElementById("description").textContent = d.description || "";
       status.className = "status " + (d.status === "online" ? "ok" : "off");
       status.innerHTML = '<span class="dot ' + esc(d.status) + '">' + esc(d.status) + '</span> &nbsp;' +
-        (d.status === "online" ? "Its node is connected; jobs run now." : "Its node is not connected right now; jobs wait until it is back.");
+        (d.status === "online" ? "Its node is connected; jobs run now."
+          : d.status === "restricted" ? "Restricted: only its node's admins can run it right now."
+          : "Its node is not connected right now; jobs wait until it is back.");
       var specs = d.specs || {};
       document.getElementById("facts").innerHTML = ['<span class="fact">kind ' + esc(d.kind) + '</span>', '<span class="fact">owner ' + esc(d.owner) + '</span>']
         .concat(Object.keys(specs).filter(function (k) { return specs[k] != null && typeof specs[k] !== "object"; }).map(function (k) {
           var unit = "", name = k, units = {_v: " V", _hz: " Hz", _s: " s", _ohm: " Ω", _j: " J", _a: " A"};
           Object.keys(units).forEach(function (s) { if (k.slice(-s.length) === s) { unit = units[s]; name = k.slice(0, -s.length); } });
           return '<span class="fact">' + esc(name.replace(/_/g, " ")) + " " + esc(specs[k]) + esc(unit) + '</span>'; })).join("");
+      if (d.page_html) {   // the device's page, written by its node's admins; sanitized by the hub
+        var about = document.getElementById("about");
+        about.innerHTML = d.page_html;
+        about.classList.remove("hidden");
+      }
       var ops = d.operations || [];
       document.getElementById("operations").innerHTML = ops.length ? ops.map(function (op) {
         var params = op.params || {};
