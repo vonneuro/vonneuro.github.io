@@ -422,6 +422,7 @@ footer a:hover{color:var(--arc-2)}
     <nav class="nav" aria-label="Primary">
       <a href="#today">Today</a>
       <a href="#messenger">Messenger</a>
+      <a href="hardware.html">Hardware</a>
       <a href="#regimes">Regimes</a>
       <a href="#wetware">Wetware</a>
       <a href="#stack">Stack</a>
@@ -810,19 +811,23 @@ c.volt_run(program, {<span class="s">"u"</span>: <span class="n">0.5</span>}, <s
           current = scope 2 / 10 kΩ, relative to its open level · any W2 output outside 0 … 5 V is refused</p>
       </div>
 
-      <div class="callout rv">
-        <h4>The device stays in your laboratory <span class="pill pre">roadmap</span></h4>
-        <p>A lightweight adapter translates the controls and readouts already used in the lab into
-          a versioned VonNeuro device contract, then registers that device with vonNeuro Messenger. A Volt
-          program can target it as a remote backend, while results return with the calibration,
-          timing, provenance and energy evidence available for that run.</p>
+      <div class="callout rv" id="network">
+        <h4>The device stays in your laboratory <span class="pill now">early access</span></h4>
+        <p>Messenger is a network now: anyone can connect their own hardware. A small agent on the computer
+          next to the device dials out to Messenger, publishes the operations the device offers with their
+          parameter ranges, and runs the jobs people send through the owner's own driver, which decides what is
+          safe. Our bench is the first node on it; every device gets a page, with its status and usage.</p>
         <div class="grid">
-          <div><b>connect</b><p>Keep the existing control stack and expose only the operations and measurements the chip already supports.</p></div>
-          <div><b>describe</b><p>Publish capabilities, parameter ranges, topology and current calibration as a machine-readable contract.</p></div>
-          <div><b>run</b><p>vonNeuro Messenger receives a compiled job, dispatches it to the laboratory device and returns outputs with its evidence record.</p></div>
+          <div><b>connect</b><p>Keep the existing control stack: a short driver exposes only the operations and measurements the chip already supports.</p></div>
+          <div><b>describe</b><p>Each operation declares typed, bounded parameters; Messenger checks them, and the driver checks every job again.</p></div>
+          <div><b>share</b><p>New devices start private. Owners open them to every account or grant time to the people they choose.</p></div>
+        </div>
+        <div class="hero-cta" style="margin-top:18px">
+          <a class="btn" href="connect.html">Connect your hardware</a>
+          <a class="btn btn-ghost" href="hardware.html">Hardware on the network</a>
         </div>
         <p class="tail">vonNeuro Messenger supplies the online endpoint, registry and job path. The scientific
-          claim still comes from the device contract and the evidence reported by the hardware.</p>
+          claim still comes from the device's declaration and the evidence reported by the hardware.</p>
       </div>
 
       <div class="callout rv">
@@ -1421,7 +1426,8 @@ $ vnstat --run 4417 --watch
         <h5>Use it</h5>
         <ul><li><a href="https://series-marina-gigantic.ngrok-free.dev">Sign in to Messenger</a></li>
             <li><a href="https://series-marina-gigantic.ngrok-free.dev/guide">Python &amp; API guide</a></li>
-            <li><a href="#messenger">Job types</a></li></ul>
+            <li><a href="#messenger">Job types</a></li>
+            <li><a href="hardware.html">Hardware network</a></li><li><a href="connect.html">Connect your hardware</a></li></ul>
       </div>
       <div>
         <h5>Project</h5>

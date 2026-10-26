@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connect your hardware · VonNeuro</title>
+<meta name="description" content="Put your own physical computing hardware on the vonNeuro network: a small agent next to the device, your own safety limits, and a page where people can run it.">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/network.css">
+</head>
+<body>
+<div class="wrap narrow">
+  <header>
+    <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">VonNeuro</a>
+    <nav><a href="hardware.html">Hardware</a><a href="connect.html" class="on">Connect your hardware</a><a href="signup.html">Sign up</a></nav>
+  </header>
+
+  <span class="label">vonNeuro network · connect <span class="pill">early access</span></span>
+  <h1>Your hardware, on the network.</h1>
+  <p class="lede">Keep your device in your laboratory and let people run experiments on it. A small agent on the
+    computer next to the hardware connects it to vonNeuro Messenger. You describe what the device can do, set its
+    limits, and decide who may use it; Messenger handles accounts, queues, metering and results.</p>
+
+  <div class="status"><b>Early access.</b> The network runs today, with our bench as its first node. Any account
+    can register a node from <i>My hardware</i>; while the hub is on its temporary tunnel, we approve each new node
+    before it pairs. <a href="#" class="report">Write to us</a> if you want to talk it through first.</div>
+
+  <div class="grid3">
+    <div><b>No public address</b><p>The agent dials out to the hub over HTTPS. Nothing listens on your network, and no port is opened.</p></div>
+    <div><b>Your limits win</b><p>Your driver checks every job before anything is driven. The hub can tighten what reaches you, never loosen it.</p></div>
+    <div><b>You stay in charge</b><p>New devices start private. Share with everyone, only with people you grant time to, or nobody; switch off or disconnect at any time.</p></div>
+  </div>
+
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><b>Describe the device in a driver.</b> A short Python class lists your devices and the operations they
+      offer, each with typed parameters and their ranges (a voltage up to 1 V, a channel from 0 to 15). Its
+      <span class="mono">check()</span> refuses anything unsafe; its <span class="mono">run()</span> drives the hardware and
+      writes the result files.</li>
+    <li><b>Register and pair the computer.</b> Sign in to Messenger, open <i>My hardware</i>, register the node
+      (for now we approve each one), and get a one-time pairing code. The agent turns it into the node's own secret.
+      You own the node, and can add colleagues as its admins; you stay an ordinary user of everyone else's hardware.</li>
+    <li><b>Run the agent.</b> Your devices appear on the network with their operations. People run them from the
+      website, the Python lab or their own Python, and you see who used what, for how long and with how much energy.</li>
+  </ol>
+
+  <h2>On the computer next to the hardware</h2>
+  <pre>pip install https://series-marina-gigantic.ngrok-free.dev/downloads/vonneuro-node.zip   # Python 3.11+
+vonneuro-node pair --hub https://series-marina-gigantic.ngrok-free.dev --code ABCD-EFGH
+vonneuro-node check          # validates your driver's operations, offline
+vonneuro-node run            # connects; your devices go online
+vonneuro-node service install   # optional: start it at logon</pre>
+  <p>The first run uses a simulated RC circuit, so you can try the whole loop before touching your hardware.</p>
+
+  <h2>A driver</h2>
+  <pre>import json
+from vonneuro_node import Driver, DeviceSpec, Operation, RunResult
+import my_lab.probe_station as instrument          # your existing control code
+
+class CrossbarDriver(Driver):
+    def devices(self):
+        return [DeviceSpec(slug="crossbar-8x8", name="8×8 memristor crossbar", kind="memristor",
+            specs={"cells": 64, "max_voltage_v": 1.0},
+            operations=[Operation("read", "Read one cell at a small voltage",
+                params={"row": {"type": "integer", "minimum": 0, "maximum": 7},
+                        "col": {"type": "integer", "minimum": 0, "maximum": 7},
+                        "voltage": {"type": "number", "exclusiveMinimum": 0, "maximum": 0.3,
+                                    "unit": "V", "default": 0.1}},
+                result="read.json")])]
+
+    def check(self, slug, operation, params, ctx):
+        return None if instrument.ready() else "The probe station is busy"
+
+    def run(self, slug, operation, params, ctx):
+        current = instrument.read(params["row"], params["col"], params["voltage"])
+        (ctx.output_dir / "read.json").write_text(json.dumps({"current_a": current}))
+        return RunResult(exit_code=0, usage_seconds=0.2)</pre>
+  <p>Set <span class="mono">[driver] class = "your_module:CrossbarDriver"</span> in <span class="mono">node.toml</span>.
+    The agent keeps a local journal of every job it ran, so you have your own record.</p>
+
+  <h2>Early-access terms, in plain words</h2>
+  <ul>
+    <li><b>You keep your hardware and your data.</b> The device stays yours and in your laboratory; you can switch it
+      off or disconnect the node at any time, and its jobs stop.</li>
+    <li><b>You are responsible for its safety.</b> Your driver's checks are the last word on what reaches the
+      hardware. Messenger checks parameters against what you declare, but cannot know your device.</li>
+    <li><b>What the hub keeps.</b> Accounts, job records (who ran which operation, with which parameters, how long),
+      and the result files your driver returns, for as long as you choose on the device (forever, or 1 to 365 days).</li>
+    <li><b>The directory.</b> A device is listed publicly only after we review it; we may unlist or switch off a
+      device that misbehaves or is reported, and tell its owner.</li>
+    <li><b>Early access.</b> The network is new and offered as is, without guarantees of availability. Hardware time
+      is free for now; any change to that will be announced before it applies.</li>
+  </ul>
+
+  <div class="actions">
+    <a class="btn" href="https://series-marina-gigantic.ngrok-free.dev/my-hardware">My hardware</a>
+    <a class="btn btn-ghost" href="signup.html">Get an account first</a>
+    <a class="btn btn-ghost" href="hardware.html">See the hardware</a>
+  </div>
+
+  <footer>Questions, or a device to discuss before you connect it? <a href="#" class="report">Write to us</a>.</footer>
+</div>
+<script>
+(function () {
+  var to = ["fcaravelli", "np.institute"].join("@");   // assembled to keep it away from harvesters
+  Array.prototype.forEach.call(document.querySelectorAll("a.report"), function (a) {
+    a.href = "mailto:" + to + "?subject=" + encodeURIComponent("Connecting hardware to vonNeuro");
+  });
+})();
+</script>
+</body>
+</html>

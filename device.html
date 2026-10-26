@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Device · VonNeuro</title>
+<meta name="description" content="One device on the vonNeuro network: what it is, the operations it offers and their parameters, and how to run it.">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/network.css">
+</head>
+<body>
+<div class="wrap narrow">
+  <header>
+    <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">VonNeuro</a>
+    <nav><a href="hardware.html">Hardware</a><a href="connect.html">Connect your hardware</a><a href="signup.html">Sign up</a></nav>
+  </header>
+
+  <span class="label" id="kicker">vonNeuro network · device</span>
+  <h1 id="name">Loading…</h1>
+  <p class="lede" id="description"></p>
+  <div class="status" id="status">Asking the network about this device…</div>
+
+  <div id="body" class="hidden">
+    <div class="facts" id="facts"></div>
+
+    <h2>Operations</h2>
+    <p>The hub checks every parameter against these ranges before a job is queued; the device's own driver then
+      checks the job again before anything is driven.</p>
+    <div id="operations"></div>
+
+    <h2>Run it</h2>
+    <pre id="snippet"></pre>
+    <p id="access"></p>
+
+    <h2>Data and usage</h2>
+    <p id="retention"></p>
+    <p id="usage"></p>
+    <div class="actions">
+      <a class="btn" href="signup.html">Get an account</a>
+      <a class="btn btn-ghost" id="messenger" href="#">Open Messenger</a>
+    </div>
+  </div>
+
+  <footer>Something wrong with this device? <a href="#" class="report">Tell us</a>. Owners can switch a device
+    off or disconnect it at any time.</footer>
+</div>
+
+<script>
+(function () {
+  var MESSENGER = "https://series-marina-gigantic.ngrok-free.dev";
+  var to = ["fcaravelli", "np.institute"].join("@");   // assembled to keep it away from harvesters
+  var ref = new URLSearchParams(location.search).get("ref") || "";
+  Array.prototype.forEach.call(document.querySelectorAll("a.report"), function (a) {
+    a.href = "mailto:" + to + "?subject=" + encodeURIComponent("vonNeuro device report: " + ref);
+  });
+  document.getElementById("messenger").href = MESSENGER + "/dashboard";
+  function esc(v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function range(p) {
+    var parts = [];
+    if (p.enum) return p.enum.map(esc).join(" · ");
+    var lo = p.minimum != null ? "≥ " + p.minimum : p.exclusiveMinimum != null ? "> " + p.exclusiveMinimum : "";
+    var hi = p.maximum != null ? "≤ " + p.maximum : p.exclusiveMaximum != null ? "< " + p.exclusiveMaximum : "";
+    if (lo) parts.push(lo); if (hi) parts.push(hi);
+    if (p.maxLength) parts.push("≤ " + p.maxLength + " bytes");
+    if (p.maxProperties) parts.push("≤ " + p.maxProperties + " entries");
+    return esc(parts.join(", ")) + (p.unit ? " " + esc(p.unit) : "");
+  }
+  function example(op) {
+    var params = op.params || {};
+    var args = Object.keys(params).filter(function (k) { return !("default" in params[k]); }).map(function (k) {
+      var p = params[k]; var v = p.type === "integer" ? (p.minimum || 0) : p.type === "number" ? (p.maximum || 1) / 2 : p.type === "string" ? '"..."' : p.type === "object" ? "{}" : "True";
+      return k + "=" + v;
+    });
+    return "device.run(" + JSON.stringify(op.name) + (args.length ? ", " + args.join(", ") : "") + ")";
+  }
+  var status = document.getElementById("status");
+  if (!/^[A-Za-z0-9_.\-]+\/[a-z0-9][a-z0-9_\-]*$/.test(ref)) {
+    document.getElementById("name").textContent = "No such device";
+    status.className = "status off"; status.innerHTML = 'See the <a href="hardware.html">hardware directory</a>.';
+    return;
+  }
+  fetch(MESSENGER + "/api/public/devices/" + ref, {headers: {"ngrok-skip-browser-warning": "1"}})
+    .then(function (r) { if (r.status === 404) throw new Error("missing"); if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (d) {
+      document.title = d.name + " · VonNeuro";
+      document.getElementById("kicker").textContent = "vonNeuro network · " + d.ref;
+      document.getElementById("name").textContent = d.name;
+      document.getElementById("description").textContent = d.description || "";
+      status.className = "status " + (d.status === "online" ? "ok" : "off");
+      status.innerHTML = '<span class="dot ' + esc(d.status) + '">' + esc(d.status) + '</span> &nbsp;' +
+        (d.status === "online" ? "Its node is connected; jobs run now." : "Its node is not connected right now; jobs wait until it is back.");
+      var specs = d.specs || {};
+      document.getElementById("facts").innerHTML = ['<span class="fact">kind ' + esc(d.kind) + '</span>', '<span class="fact">owner ' + esc(d.owner) + '</span>']
+        .concat(Object.keys(specs).filter(function (k) { return specs[k] != null && typeof specs[k] !== "object"; }).map(function (k) {
+          var unit = "", name = k, units = {_v: " V", _hz: " Hz", _s: " s", _ohm: " Ω", _j: " J", _a: " A"};
+          Object.keys(units).forEach(function (s) { if (k.slice(-s.length) === s) { unit = units[s]; name = k.slice(0, -s.length); } });
+          return '<span class="fact">' + esc(name.replace(/_/g, " ")) + " " + esc(specs[k]) + esc(unit) + '</span>'; })).join("");
+      var ops = d.operations || [];
+      document.getElementById("operations").innerHTML = ops.length ? ops.map(function (op) {
+        var params = op.params || {};
+        return '<h3><code>' + esc(op.name) + '</code></h3><p>' + esc(op.summary) + (op.estimate ? ' Expected time: <span class="mono">' + esc(op.estimate) + '</span> s.' : '') + '</p>' +
+          '<table><tr><th>Parameter</th><th>Type</th><th>Allowed</th><th>Default</th></tr>' +
+          Object.keys(params).map(function (k) { var p = params[k];
+            return '<tr><td><code>' + esc(k) + '</code>' + (p.description ? '<br><span style="color:var(--txt-soft);font-size:12.5px">' + esc(p.description) + '</span>' : '') +
+              '</td><td>' + esc(p.type) + '</td><td>' + range(p) + '</td><td>' + ("default" in p ? '<code>' + esc(JSON.stringify(p.default)) + '</code>' : 'required') + '</td></tr>'; }).join("") +
+          '</table>';
+      }).join("") : '<p>This device is used through its own page in Messenger rather than through operations.</p>';
+      document.getElementById("snippet").textContent =
+        'from vonneuro_messenger import MessengerClient\nc = MessengerClient("' + MESSENGER + '")\nc.login("you", "your-password")\n\n' +
+        'device = c.device("' + d.ref + '")\n' + (ops.length ? 'data = ' + example(ops[0]) : 'print(device)');
+      document.getElementById("access").innerHTML = d.visibility === "approved"
+        ? "<b>This device runs on time its owner grants.</b> Ask for it with <span class=\"mono\">device.request_access(hours, reason)</span>; the owner answers, and the time granted is yours on this device only."
+        : "Any signed-in account can run it, on the account's own hardware time (1 hour to start, more on request).";
+      document.getElementById("retention").textContent = d.retention_days
+        ? "Result files of finished jobs are deleted after " + d.retention_days + " day" + (d.retention_days === 1 ? "" : "s") + "; download what you want to keep."
+        : "Result files are kept with your job until you delete them.";
+      var u = d.usage_30d || {};
+      document.getElementById("usage").textContent = "Last 30 days: " + (u.jobs || 0) + " finished job" + (u.jobs === 1 ? "" : "s") + ", " +
+        ((u.seconds || 0) / 60).toFixed(1) + " minutes of hardware time" + (u.energy_j ? ", " + (u.energy_j * 1e9).toFixed(1) + " nJ delivered to the device." : ".");
+      document.getElementById("body").classList.remove("hidden");
+    })
+    .catch(function (error) {
+      document.getElementById("name").textContent = error.message === "missing" ? "No such device" : "Device";
+      status.className = "status off";
+      status.innerHTML = error.message === "missing"
+        ? 'This device is not listed. See the <a href="hardware.html">hardware directory</a>.'
+        : "The network's hub is offline at the moment; this page works again when it is back.";
+    });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hardware network · VonNeuro</title>
+<meta name="description" content="Physical computing hardware on the vonNeuro network: memristors, RC coprocessors, p-bit samplers and more, each with the operations it offers, its status and its usage.">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/network.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">VonNeuro</a>
+    <nav><a href="hardware.html" class="on">Hardware</a><a href="connect.html">Connect your hardware</a><a href="signup.html">Sign up</a></nav>
+  </header>
+
+  <span class="label">vonNeuro network · hardware</span>
+  <h1>Hardware you can reach.</h1>
+  <p class="lede">Every device here is a physical system in someone's laboratory, connected through vonNeuro Messenger.
+    Each one lists the operations it offers, with typed and bounded parameters; you send a job, the owner's computer
+    runs it on the hardware, and the measured results come back to you. The owner's driver decides what is safe, so
+    the hardware keeps its own limits.</p>
+
+  <div class="status" id="status">Asking the network which devices are online…</div>
+  <div class="cards" id="cards"></div>
+
+  <h2>Run one from Python</h2>
+  <pre>pip install git+https://github.com/vonneuro/messenger-api.git
+
+from vonneuro_messenger import MessengerClient
+c = MessengerClient("https://series-marina-gigantic.ngrok-free.dev")
+c.login("you", "your-password")
+
+array = c.device("admin/memristor-array")
+print(array.operations["iv_sweep"]["params"])          # every parameter with its range and unit
+iv = array.run("iv_sweep", channel=3, amplitude=0.25, frequency=10)["memristor"]</pre>
+  <div class="actions">
+    <a class="btn" href="signup.html">Get an account</a>
+    <a class="btn btn-ghost" href="connect.html">Connect your own hardware</a>
+  </div>
+
+  <footer>Device owners keep their hardware in their own laboratory and can switch it off or disconnect it at any time.
+    Something wrong with a device? <a href="#" class="report">Tell us</a>.</footer>
+</div>
+
+<script>
+(function () {
+  var MESSENGER = "https://series-marina-gigantic.ngrok-free.dev";
+  var to = ["fcaravelli", "np.institute"].join("@");   // assembled to keep it away from harvesters
+  Array.prototype.forEach.call(document.querySelectorAll("a.report"), function (a) { a.href = "mailto:" + to + "?subject=" + encodeURIComponent("vonNeuro device report"); });
+  function esc(v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  var UNITS = {_v: " V", _hz: " Hz", _s: " s", _ohm: " Ω", _j: " J", _a: " A"};
+  function fact(key, value) {
+    if (value == null || typeof value === "object") return "";
+    var unit = "", name = key;
+    Object.keys(UNITS).forEach(function (s) { if (key.slice(-s.length) === s) { unit = UNITS[s]; name = key.slice(0, -s.length); } });
+    return '<span class="fact">' + esc(name.replace(/_/g, " ")) + " " + esc(value) + esc(unit) + "</span>";
+  }
+  function minutes(s) { return s >= 3600 ? (s / 3600).toFixed(1) + " h" : s >= 60 ? Math.round(s / 60) + " min" : Math.round(s) + " s"; }
+
+  var status = document.getElementById("status");
+  fetch(MESSENGER + "/api/public/devices", {headers: {"ngrok-skip-browser-warning": "1"}})
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (data) {
+      var devices = data.devices || [];
+      var online = devices.filter(function (d) { return d.status === "online"; }).length;
+      status.className = "status ok";
+      status.textContent = devices.length + " device" + (devices.length === 1 ? "" : "s") + " on the network, " + online + " online now.";
+      document.getElementById("cards").innerHTML = devices.map(function (d) {
+        var specs = d.specs || {};
+        var u = d.usage_30d || {};
+        var access = d.visibility === "approved" ? '<span class="pill">owner grants time</span>' : "";
+        return '<div class="card">' +
+          '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="dot ' + esc(d.status) + '">' + esc(d.status) + '</span>' + access + '</div>' +
+          '<h3><a href="device.html?ref=' + encodeURIComponent(d.ref) + '">' + esc(d.name) + '</a></h3>' +
+          '<span class="ref">' + esc(d.ref) + ' · ' + esc(d.kind) + '</span>' +
+          (d.description ? '<p>' + esc(d.description) + '</p>' : '') +
+          '<div class="facts">' + Object.keys(specs).map(function (k) { return fact(k, specs[k]); }).join("") + '</div>' +
+          '<p>' + ((d.operations || []).map(function (op) { return '<code>' + esc(op.name) + '</code>'; }).join(" ") || '<span style="color:var(--txt-soft)">Used through its own page in Messenger</span>') + '</p>' +
+          '<div class="usage">Last 30 days: ' + (u.jobs || 0) + ' job' + (u.jobs === 1 ? '' : 's') + ', ' + minutes(u.seconds || 0) + ' of hardware time</div>' +
+          '</div>';
+      }).join("");
+    })
+    .catch(function () {
+      status.className = "status off";
+      status.textContent = "The network's hub is offline at the moment; the directory is back when it is.";
+    });
+})();
+</script>
+</body>
+</html>
