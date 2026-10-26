@@ -81,6 +81,10 @@ class CrossbarDriver(Driver):
         return RunResult(exit_code=0, usage_seconds=0.2)</pre>
   <p>Set <span class="mono">[driver] class = "your_module:CrossbarDriver"</span> in <span class="mono">node.toml</span>.
     The agent keeps a local journal of every job it ran, so you have your own record.</p>
+  <p>Two example drivers come with the agent: <span class="mono">drivers/simulated.py</span>, the shortest one to start
+    from, and <span class="mono">drivers/bench.py</span>, the driver of our own bench. The vonNeuro bench is not a special
+    case: it is a node like yours, paired the same way, with an RC board and a memristor array behind multiplexers
+    and its safety rules written in its driver.</p>
 
   <h2>Early-access terms, in plain words</h2>
   <ul>
