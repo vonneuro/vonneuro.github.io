@@ -16,7 +16,7 @@
 <div class="wrap narrow">
   <header>
     <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">VonNeuro</a>
-    <nav><a href="hardware.html">Hardware</a><a href="connect.html">Connect your hardware</a><a href="signup.html">Sign up</a></nav>
+    <nav><a href="./#examples">Examples</a><a href="hardware.html">Devices</a><a href="connect.html">Connect hardware</a><a href="signup.html">Sign up</a></nav>
   </header>
 
   <span class="label" id="kicker">vonNeuro network · device</span>
@@ -30,25 +30,27 @@
     <section id="about" class="hidden" style="margin-top:1.5rem; border-top:1px solid var(--line); padding-top:.5rem;"></section>
 
     <h2>Operations</h2>
-    <p>The hub checks every parameter against these ranges before a job is queued; the device's own driver then
-      checks the job again before anything is driven.</p>
+    <p>The hub checks every parameter against these ranges before a job is queued; the device's driver checks the
+      job again before anything is driven.</p>
     <div id="operations"></div>
 
-    <h2>Run it</h2>
+    <h2>Running it</h2>
     <pre id="snippet"></pre>
+    <p>In the <a href="./#tools">VS Code extension</a> and the browser's Python lab, <span class="mono">client</span> is
+      already signed in, so the login lines are not needed.</p>
     <p id="access"></p>
 
     <h2>Data and usage</h2>
     <p id="retention"></p>
     <p id="usage"></p>
     <div class="actions">
-      <a class="btn" href="signup.html">Get an account</a>
+      <a class="btn" href="signup.html">Create an account</a>
       <a class="btn btn-ghost" id="messenger" href="#">Open Messenger</a>
     </div>
   </div>
 
-  <footer>Something wrong with this device? <a href="#" class="report">Tell us</a>. Owners can switch a device
-    off or disconnect it at any time.</footer>
+  <footer>To report a problem with this device, <a href="#" class="report">write to us</a>. Owners can switch a
+    device off or disconnect it at any time.</footer>
 </div>
 
 <script>
@@ -94,9 +96,9 @@
       document.getElementById("description").textContent = d.description || "";
       status.className = "status " + (d.status === "online" ? "ok" : "off");
       status.innerHTML = '<span class="dot ' + esc(d.status) + '">' + esc(d.status) + '</span> &nbsp;' +
-        (d.status === "online" ? "Its node is connected; jobs run now."
-          : d.status === "restricted" ? "Restricted: only its node's admins can run it right now."
-          : "Its node is not connected right now; jobs wait until it is back.");
+        (d.status === "online" ? "Node connected; jobs run in order of arrival."
+          : d.status === "restricted" ? "Restricted: currently only its node's admins can run it."
+          : "Node not connected; queued jobs wait until it reconnects.");
       var specs = d.specs || {};
       document.getElementById("facts").innerHTML = ['<span class="fact">kind ' + esc(d.kind) + '</span>', '<span class="fact">owner ' + esc(d.owner) + '</span>']
         .concat(Object.keys(specs).filter(function (k) { return specs[k] != null && typeof specs[k] !== "object"; }).map(function (k) {
@@ -122,8 +124,8 @@
         'from vonneuro_messenger import MessengerClient\nc = MessengerClient("' + MESSENGER + '")\nc.login("you", "your-password")\n\n' +
         'device = c.device("' + d.ref + '")\n' + (ops.length ? 'data = ' + example(ops[0]) : 'print(device)');
       document.getElementById("access").innerHTML = d.visibility === "approved"
-        ? "<b>This device runs on time its owner grants.</b> Ask for it with <span class=\"mono\">device.request_access(hours, reason)</span>; the owner answers, and the time granted is yours on this device only."
-        : "Any signed-in account can run it, on the account's own hardware time (1 hour to start, more on request).";
+        ? "<b>Access is granted by the owner.</b> Request time with <span class=\"mono\">device.request_access(hours, reason)</span>; time granted applies to this device only."
+        : "Any signed-in account can run it, using the account's hardware time (one hour initially, more on request).";
       document.getElementById("retention").textContent = d.retention_days
         ? "Result files of finished jobs are deleted after " + d.retention_days + " day" + (d.retention_days === 1 ? "" : "s") + "; download what you want to keep."
         : "Result files are kept with your job until you delete them.";
@@ -137,7 +139,7 @@
       status.className = "status off";
       status.innerHTML = error.message === "missing"
         ? 'This device is not listed. See the <a href="hardware.html">hardware directory</a>.'
-        : "The network's hub is offline at the moment; this page works again when it is back.";
+        : "The hub is not reachable at the moment; this page loads again when it is.";
     });
 })();
 </script>

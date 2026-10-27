@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hardware network · VonNeuro</title>
-<meta name="description" content="Physical computing hardware on the vonNeuro network: memristors, RC coprocessors, p-bit samplers and more, each with the operations it offers, its status and its usage.">
+<title>Devices · VonNeuro</title>
+<meta name="description" content="Devices on the vonNeuro network: memristors, RC circuits, p-bit samplers and other physical hardware, each with its declared operations, live status and 30-day usage.">
 <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,20 +16,20 @@
 <div class="wrap">
   <header>
     <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">VonNeuro</a>
-    <nav><a href="hardware.html" class="on">Hardware</a><a href="connect.html">Connect your hardware</a><a href="signup.html">Sign up</a></nav>
+    <nav><a href="./#examples">Examples</a><a href="hardware.html" class="on">Devices</a><a href="connect.html">Connect hardware</a><a href="signup.html">Sign up</a></nav>
   </header>
 
-  <span class="label">vonNeuro network · hardware</span>
-  <h1>Hardware you can reach.</h1>
-  <p class="lede">Every device here is a physical system in someone's laboratory, connected through vonNeuro Messenger.
-    Each one lists the operations it offers, with typed and bounded parameters; you send a job, the owner's computer
-    runs it on the hardware, and the measured results come back to you. The owner's driver decides what is safe, so
-    the hardware keeps its own limits.</p>
+  <span class="label">vonNeuro network · devices</span>
+  <h1>Devices on the network</h1>
+  <p class="lede">Each device listed here is a physical system in the laboratory that owns it, connected to vonNeuro
+    Messenger by an agent on an adjacent computer. A device declares its operations with typed, bounded parameters.
+    A job is checked against those bounds by the hub, and again by the owner's driver before anything is driven; the
+    result returns with its raw data. Status and 30-day usage below are read from the hub when the page loads.</p>
 
   <div class="status" id="status">Asking the network which devices are online…</div>
   <div class="cards" id="cards"></div>
 
-  <h2>Run one from Python</h2>
+  <h2>Running an operation from Python</h2>
   <pre>pip install git+https://github.com/vonneuro/messenger-api.git
 
 from vonneuro_messenger import MessengerClient
@@ -39,13 +39,16 @@ c.login("you", "your-password")
 array = c.device("admin/memristor-array")
 print(array.operations["iv_sweep"]["params"])          # every parameter with its range and unit
 iv = array.run("iv_sweep", channel=3, amplitude=0.25, frequency=10)["memristor"]</pre>
+  <p>The same calls run in the <a href="./#tools">VS Code extension</a> and in the browser's Python lab, where
+    <span class="mono">client</span> is already signed in. The <a href="./#examples">worked examples</a> show complete
+    scripts and the output they printed on the bench devices listed here.</p>
   <div class="actions">
-    <a class="btn" href="signup.html">Get an account</a>
-    <a class="btn btn-ghost" href="connect.html">Connect your own hardware</a>
+    <a class="btn" href="signup.html">Create an account</a>
+    <a class="btn btn-ghost" href="connect.html">Connect hardware</a>
   </div>
 
-  <footer>Device owners keep their hardware in their own laboratory and can switch it off or disconnect it at any time.
-    Something wrong with a device? <a href="#" class="report">Tell us</a>.</footer>
+  <footer>Owners keep their hardware in their own laboratory and can switch it off or disconnect it at any time.
+    To report a problem with a device, <a href="#" class="report">write to us</a>.</footer>
 </div>
 
 <script>
@@ -88,7 +91,7 @@ iv = array.run("iv_sweep", channel=3, amplitude=0.25, frequency=10)["memristor"]
     })
     .catch(function () {
       status.className = "status off";
-      status.textContent = "The network's hub is offline at the moment; the directory is back when it is.";
+      status.textContent = "The hub is not reachable at the moment; the directory reappears when it is.";
     });
 })();
 </script>
