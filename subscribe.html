@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subscribe · VonNeuro</title>
+<meta name="description" content="Choose what vonNeuro sends you: the newsletter, notices when new equipment comes online, and offers on bench time.">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/network.css">
+<style>
+form{display:grid;gap:14px;max-width:560px}
+.field{display:flex;flex-direction:column;gap:6px;font-family:var(--f-label);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-soft)}
+.field input{width:100%;font-family:var(--f-body);font-size:15px;color:var(--txt);background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:9px 11px}
+.field input:focus{outline:none;border-color:var(--arc);box-shadow:0 0 0 3px var(--arc-dim)}
+fieldset{border:0;padding:0;margin:4px 0 0;display:grid;gap:10px}
+legend{padding:0;margin-bottom:10px}
+.topic{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start;border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:12px 14px;cursor:pointer}
+.topic:hover{border-color:#3A3350}
+.topic:has(input:checked){border-color:var(--arc)}
+.topic input{width:17px;height:17px;margin:3px 0 0;accent-color:var(--arc);grid-row:span 2}
+.topic b{font-weight:600;font-size:15px}
+.topic span{font-size:13.5px;color:var(--txt-soft)}
+.trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:4px}
+.error{color:#FF9C8A;font-size:14px;margin:0}
+.note{color:var(--txt-soft);font-size:13.5px;margin:0;max-width:60ch}
+.done{border:1px solid var(--line);border-left:2px solid var(--ok);background:var(--panel);border-radius:3px;padding:18px 20px;max-width:560px}
+.done h2{margin:0 0 .4rem}
+.done p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+  <header>
+    <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">VonNeuro</a>
+    <nav><a href="./#examples">Examples</a><a href="hardware.html">Devices</a><a href="connect.html">Connect hardware</a><a href="signup.html">Sign up</a><a href="subscribe.html" class="on">Subscribe</a></nav>
+  </header>
+
+  <span class="label">vonNeuro · updates</span>
+  <h1 id="title">Stay informed</h1>
+  <p class="lede" id="lede">Choose what we send you. You can change it by subscribing again with the same address,
+    and every email has a link to unsubscribe.</p>
+
+  <form id="subscribe" novalidate>
+    <label class="field">Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+    <label class="field">Name (optional)<input name="name" autocomplete="name" maxlength="100"></label>
+    <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+
+    <fieldset>
+      <legend class="label">Send me</legend>
+      <label class="topic"><input type="checkbox" name="topics" value="newsletter" checked>
+        <b>Newsletter</b><span>Results from the bench, new VOLT features and papers, about once a month.</span></label>
+      <label class="topic"><input type="checkbox" name="topics" value="equipment" checked>
+        <b>New equipment online</b><span>A notice when a new device or laboratory joins the network.</span></label>
+      <label class="topic"><input type="checkbox" name="topics" value="promotions">
+        <b>Offers and promotions</b><span>Free bench hours, discounts and early access.</span></label>
+    </fieldset>
+
+    <div class="row">
+      <button class="btn" type="submit" id="submit">Subscribe</button>
+      <p class="error" id="error" role="alert"></p>
+    </div>
+    <p class="note">We use your address only to send what you ticked here, and never share it.</p>
+  </form>
+
+  <div class="done hidden" id="done">
+    <h2 id="done-title">You're subscribed.</h2>
+    <p id="done-text"></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var MESSENGER = "https://series-marina-gigantic.ngrok-free.dev";
+  var to = ["fcaravelli", "np.institute"].join("@");  // assembled to keep it away from harvesters
+  var HEADERS = {"Content-Type": "application/json", "ngrok-skip-browser-warning": "1"};
+  var form = document.getElementById("subscribe"), error = document.getElementById("error");
+  var submit = document.getElementById("submit");
+  var NAMES = {newsletter: "the newsletter", equipment: "new equipment online", promotions: "offers and promotions"};
+
+  function done(title, text) {
+    form.classList.add("hidden");
+    document.getElementById("done-title").textContent = title;
+    document.getElementById("done-text").innerHTML = text;
+    document.getElementById("done").classList.remove("hidden");
+  }
+
+  function post(path, body) {
+    return fetch(MESSENGER + path, {method: "POST", headers: HEADERS, body: JSON.stringify(body)})
+      .then(function (r) { return r.json().then(function (b) { return {ok: r.ok, body: b}; }); });
+  }
+
+  // An unsubscribe link from one of our emails: subscribe.html?unsubscribe=<token>
+  var token = new URLSearchParams(location.search).get("unsubscribe");
+  if (token) {
+    document.getElementById("title").textContent = "Unsubscribe";
+    document.getElementById("lede").textContent = "Removing your address…";
+    form.classList.add("hidden");
+    post("/api/subscribe/unsubscribe", {token: token}).then(function (res) {
+      document.getElementById("lede").textContent = "";
+      if (res.ok) done("You're unsubscribed.", "We will not send any more emails to <b></b>. Changed your mind? " +
+        "<a href=\"subscribe.html\">Subscribe again</a>.");
+      else done("That link did not work.", (res.body.detail || "") + " <a href=\"mailto:" + to + "\">Email us</a> and we will remove you by hand.");
+      var b = document.querySelector("#done-text b");
+      if (b) b.textContent = res.body.email || "";
+    }).catch(function () {
+      document.getElementById("lede").textContent = "";
+      done("The server did not answer.", "Try the link again in a minute, or <a href=\"mailto:" + to +
+        "?subject=Unsubscribe\">email us</a> and we will remove you by hand.");
+    });
+    return;
+  }
+
+  function chosen() {
+    return Array.prototype.filter.call(form.elements.topics, function (c) { return c.checked; })
+      .map(function (c) { return c.value; });
+  }
+
+  function emailRequest(f, topics) {
+    var body = ["Please subscribe me to: " + topics.map(function (t) { return NAMES[t]; }).join(", ") + ".", "",
+      "Email: " + f.email.value.trim(), "Name: " + (f.name.value.trim() || "-")].join("\n");
+    window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent("vonNeuro subscription") +
+      "&body=" + encodeURIComponent(body);
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    error.textContent = "";
+    var f = form.elements, topics = chosen();
+    if (!f.email.checkValidity() || !f.email.value.trim()) { f.email.reportValidity(); return; }
+    if (!topics.length) { error.textContent = "Tick at least one of the three."; return; }
+    submit.disabled = true;
+    submit.textContent = "Subscribing…";
+    post("/api/subscribe", {email: f.email.value.trim(), name: f.name.value.trim() || null, topics: topics,
+                            website: f.website.value || null})
+      .then(function (res) {
+        if (!res.ok) {
+          error.textContent = res.body.detail || "That did not work; please try again.";
+          submit.disabled = false;
+          submit.textContent = "Subscribe";
+          return;
+        }
+        done("You're subscribed.", "We will send <b>" + topics.map(function (t) { return NAMES[t]; }).join("</b>, <b>") +
+          "</b> to the address you gave. Every email has a link to unsubscribe.");
+      })
+      .catch(function () {
+        // The bench server (which keeps the list) is offline: fall back to an email.
+        error.innerHTML = "Our server did not answer, so your email app will open with the request instead.";
+        submit.disabled = false;
+        submit.textContent = "Subscribe";
+        emailRequest(f, topics);
+      });
+  });
+})();
+</script>
+</body>
+</html>
