@@ -50,7 +50,15 @@ input:focus,textarea:focus{outline:none;border-color:var(--arc);box-shadow:0 0 0
 pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:10px 12px;overflow-x:auto;color:var(--txt);margin:.5rem 0 0}
 .mono{font-family:var(--f-code);font-size:.92em}
 .hidden{display:none}
-@media (max-width:640px){ form{grid-template-columns:1fr} }
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:12px 0 18px}
+.plan{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:16px}
+.plan h2{font-family:var(--f-display);font-weight:600;font-size:1.2rem;margin:0}
+.plan p{color:var(--txt-mid);font-size:14.5px;margin:0;flex:1}
+.plan .btn{align-self:stretch}
+.plan.free{border-color:var(--arc)}
+.plan.later{opacity:.6;cursor:default;user-select:none}
+.plan.later .label{align-self:stretch;text-align:center;padding:10px 0}
+@media (max-width:640px){ form,.plans{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -80,14 +88,36 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
     <label class="wide">What would you like to run?<textarea name="purpose" maxlength="450"
       placeholder="Memristor I–V studies, VOLT programs on the RC array, p-bit sampling…"></textarea></label>
     <div class="actions">
-      <button class="btn" type="submit" id="submit">Create my account</button>
+      <button class="btn" type="submit" id="submit">Continue</button>
       <p class="error" id="error" role="alert"></p>
     </div>
   </form>
 
+  <div class="hidden" id="step-plan">
+    <span class="label">Choose a plan</span>
+    <div class="plans">
+      <div class="plan free">
+        <h2>Free</h2>
+        <p><span id="plan-time">1 hour</span> of free bench time per week.</p>
+        <button class="btn" type="button" id="choose-free">Choose Free</button>
+      </div>
+      <div class="plan later" aria-disabled="true">
+        <h2>Silver</h2>
+        <p>Time on D-Wave.</p>
+        <span class="label">Not available yet</span>
+      </div>
+      <div class="plan later" aria-disabled="true">
+        <h2>Pro</h2>
+        <p>Time on wetware.</p>
+        <span class="label">Not available yet</span>
+      </div>
+    </div>
+    <button class="btn btn-ghost" type="button" id="plan-back">Back</button>
+  </div>
+
   <div class="done hidden" id="done">
     <h2>Welcome, <span id="done-name"></span>.</h2>
-    <p class="note">Your account is ready, with <span id="done-time">1 hour</span> of bench time.</p>
+    <p class="note">Your account is ready, with <span id="done-time">1 hour</span> of bench time per week.</p>
     <ol>
       <li><b>Sign in</b> to the dashboard: <a id="done-login" href="#">Messenger login</a>. The same account works from Python and in the game.</li>
       <li><b>Install the Python API</b> (public, Python 3.11 or newer) and sweep your first memristor:
@@ -101,7 +131,7 @@ iv = c.memristor_array(3, amplitude=0.25)["memristor"]</pre>
         installed? The <a href="https://series-marina-gigantic.ngrok-free.dev/python">Python lab</a> runs the same code in your browser.</li>
       <li id="done-github"><b>Watch your email for GitHub's invitation</b> to <span class="mono">vonneuro/messenger</span> (for <span id="done-gh"></span>),
         the repository with the runnable examples and the full bench manual. We send it by hand, usually within a working day.</li>
-      <li><b>Need more than your hour?</b> Ask from <i>Usage</i> on the dashboard.</li>
+      <li><b>Need more than your weekly hour?</b> Ask from <i>Usage</i> on the dashboard.</li>
     </ol>
   </div>
 </div>
@@ -112,6 +142,7 @@ iv = c.memristor_array(3, amplitude=0.25)["memristor"]</pre>
   var to = ["fcaravelli", "np.institute"].join("@");  // assembled to keep it away from harvesters
   var form = document.getElementById("signup"), status = document.getElementById("status");
   var error = document.getElementById("error"), submit = document.getElementById("submit");
+  var plan = document.getElementById("step-plan"), chooseFree = document.getElementById("choose-free");
   var online = false;
 
   function setStatus(text, kind) { status.innerHTML = text; status.className = "status " + (kind || ""); }
@@ -126,7 +157,8 @@ iv = c.memristor_array(3, amplitude=0.25)["memristor"]</pre>
       clearTimeout(timer);
       online = true;
       document.getElementById("done-time").textContent = hours(p.trial_seconds);
-      setStatus("The bench server is online. Each account gets " + hours(p.trial_seconds) + " of bench time, and more on request.", "ok");
+      document.getElementById("plan-time").textContent = hours(p.trial_seconds);
+      setStatus("The bench server is online. Each account gets " + hours(p.trial_seconds) + " of bench time per week, and more on request.", "ok");
     })
     .catch(function () {
       clearTimeout(timer);
@@ -143,17 +175,42 @@ iv = c.memristor_array(3, amplitude=0.25)["memristor"]</pre>
       "&body=" + encodeURIComponent(body);
   }
 
+  function purposeOf(f) {
+    var purpose = f.purpose.value.trim();
+    if (f.affiliation.value.trim()) purpose = (purpose ? purpose + " " : "") + "(" + f.affiliation.value.trim() + ")";
+    return purpose;
+  }
+
+  function showStep(toPlan) {
+    plan.classList.toggle("hidden", !toPlan);
+    form.classList.toggle("hidden", toPlan);
+    status.classList.toggle("hidden", toPlan);
+  }
+
+  // A refused or failed sign-up goes back to the form, where the details can be corrected.
+  function backToForm(message) {
+    showStep(false);
+    error.innerHTML = message;
+    chooseFree.disabled = false;
+    chooseFree.textContent = "Choose Free";
+  }
+
   form.addEventListener("submit", function (event) {
     event.preventDefault();
     error.textContent = "";
     var f = form.elements;
     if (!form.checkValidity()) { form.reportValidity(); return; }
     if (f.password.value !== f.password2.value) { error.textContent = "The two passwords differ."; return; }
-    var purpose = f.purpose.value.trim();
-    if (f.affiliation.value.trim()) purpose = (purpose ? purpose + " " : "") + "(" + f.affiliation.value.trim() + ")";
-    if (!online) { emailRequest(f, purpose); return; }
-    submit.disabled = true;
-    submit.textContent = "Creating…";
+    if (!online) { emailRequest(f, purposeOf(f)); return; }
+    showStep(true);
+  });
+
+  document.getElementById("plan-back").addEventListener("click", function () { showStep(false); });
+
+  chooseFree.addEventListener("click", function () {
+    var f = form.elements, purpose = purposeOf(f);
+    chooseFree.disabled = true;
+    chooseFree.textContent = "Creating…";
     fetch(MESSENGER + "/api/auth/register", {
       method: "POST", headers: {"Content-Type": "application/json", "ngrok-skip-browser-warning": "1"},
       body: JSON.stringify({username: f.username.value.trim(), email: f.email.value.trim(), password: f.password.value,
@@ -163,14 +220,12 @@ iv = c.memristor_array(3, amplitude=0.25)["memristor"]</pre>
     }).then(function (res) {
       if (!res.ok) {
         var d = res.body.detail;
+        backToForm("");
         error.textContent = Array.isArray(d) ? d.map(function (x) { return (x.loc ? x.loc[x.loc.length - 1] + ": " : "") + x.msg; }).join("; ")
           : (d || "Sign-up failed; please try again.");
-        submit.disabled = false;
-        submit.textContent = "Create my account";
         return;
       }
-      form.classList.add("hidden");
-      status.classList.add("hidden");
+      plan.classList.add("hidden");
       document.getElementById("done-name").textContent = res.body.username;
       document.getElementById("done-user").textContent = res.body.username;
       document.getElementById("done-login").href = MESSENGER + "/login";
@@ -178,9 +233,7 @@ iv = c.memristor_array(3, amplitude=0.25)["memristor"]</pre>
       else document.getElementById("done-github").classList.add("hidden");
       document.getElementById("done").classList.remove("hidden");
     }).catch(function () {
-      error.innerHTML = "The bench server did not answer. Try again in a minute, or <a href=\"mailto:" + to + "\">email us</a>.";
-      submit.disabled = false;
-      submit.textContent = "Create my account";
+      backToForm("The bench server did not answer. Try again in a minute, or <a href=\"mailto:" + to + "\">email us</a>.");
     });
   });
 })();

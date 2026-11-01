@@ -125,7 +125,7 @@
         'device = c.device("' + d.ref + '")\n' + (ops.length ? 'data = ' + example(ops[0]) : 'print(device)');
       document.getElementById("access").innerHTML = d.visibility === "approved"
         ? "<b>Access is granted by the owner.</b> Request time with <span class=\"mono\">device.request_access(hours, reason)</span>; time granted applies to this device only."
-        : "Any signed-in account can run it, using the account's hardware time (one hour initially, more on request).";
+        : "Any signed-in account can run it, using the account's hardware time (one hour per week, more on request).";
       document.getElementById("retention").textContent = d.retention_days
         ? "Result files of finished jobs are deleted after " + d.retention_days + " day" + (d.retention_days === 1 ? "" : "s") + "; download what you want to keep."
         : "Result files are kept with your job until you delete them.";
