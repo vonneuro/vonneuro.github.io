@@ -58,7 +58,12 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
 .plan.free{border-color:var(--arc)}
 .plan.later{opacity:.6;cursor:default;user-select:none}
 .plan.later .label{align-self:stretch;text-align:center;padding:10px 0}
-@media (max-width:640px){ form,.plans{grid-template-columns:1fr} }
+.donate{display:flex;gap:8px;align-items:stretch}
+.donate .btn{flex:1;min-width:0;background:transparent;color:var(--txt);border-color:var(--line)}
+.donate-help{flex:none;width:36px;background:none;border:1px solid var(--line);border-radius:2px;color:var(--txt-mid);font-family:var(--f-body);font-weight:600;cursor:pointer}
+.donate-help:hover,.donate-help[aria-expanded="true"]{border-color:var(--arc);color:var(--txt)}
+.donate-why{grid-column:1/-1;margin:0;border:1px solid var(--line);border-left:2px solid var(--arc);background:var(--panel);border-radius:3px;padding:12px 14px;font-size:14px;color:var(--txt-mid)}
+@media (max-width:640px){ form,.plans{grid-template-columns:1fr} .plan.free{order:-2} .donate-why{order:-1} }
 </style>
 </head>
 <body>
@@ -100,6 +105,10 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
         <h2>Free</h2>
         <p><span id="plan-time">1 hour</span> of free bench time per week.</p>
         <button class="btn" type="button" id="choose-free">Choose Free</button>
+        <div class="donate">
+          <button class="btn" type="button" disabled>Donate to the Institute for Nonequilibrium Phenomena (np.institute)</button>
+          <button class="donate-help" type="button" id="donate-help" aria-label="Why donate?" aria-expanded="false" aria-controls="donate-why">?</button>
+        </div>
       </div>
       <div class="plan later" aria-disabled="true">
         <h2>Silver</h2>
@@ -111,6 +120,10 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
         <p>Time on wetware.</p>
         <span class="label">Not available yet</span>
       </div>
+      <p class="donate-why hidden" id="donate-why">Support free research in physical AI, nonequilibrium systems across
+        physical and biological systems, nonequilibrium thermodynamics, energy efficiency and AI. Click to support the
+        <a href="https://np.institute" target="_blank" rel="noopener">institute</a> with as little as 50¢: each click adds
+        50 cents. vonNeuro has a partnership with INeP, the Institute for Nonequilibrium Phenomena. Donations are not open yet.</p>
     </div>
     <button class="btn btn-ghost" type="button" id="plan-back">Back</button>
   </div>
@@ -206,6 +219,10 @@ iv = c.memristor_array(3, amplitude=0.25)["memristor"]</pre>
   });
 
   document.getElementById("plan-back").addEventListener("click", function () { showStep(false); });
+  document.getElementById("donate-help").addEventListener("click", function () {
+    var open = !document.getElementById("donate-why").classList.toggle("hidden");
+    this.setAttribute("aria-expanded", String(open));
+  });
 
   chooseFree.addEventListener("click", function () {
     var f = form.elements, purpose = purposeOf(f);
