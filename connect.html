@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Connect hardware · VonNeuro</title>
-<meta name="description" content="Connecting a physical device to the vonNeuro network: an agent on the adjacent computer, a driver that declares operations and limits, and owner-controlled access.">
+<meta name="description" content="Connecting a physical device to the vonNeuro network: what a device must provide (input, output, description), free or paid terms with an hourly price, an agent on the adjacent computer, a driver that declares operations and limits, and owner-controlled access.">
 <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,8 +26,32 @@
     decides who may use it. Messenger provides accounts, queueing, metering and the return of results.</p>
 
   <div class="status">Node registration is reviewed: any account can register a node from <i>My hardware</i>, and
-    while the hub runs on a temporary tunnel each new node is approved before it pairs. To discuss a device first,
+    each new node is approved before it pairs. To discuss a device first,
     <a href="#" class="report">write to us</a>.</div>
+
+  <h2>What a device must provide</h2>
+  <p>Any bench instrument, chip or set-up can be connected, as long as its owner provides three things:</p>
+  <div class="grid3">
+    <div><b>1 · Access to its input</b><p>The way a job drives the device: the voltages, pulses, settings or data it
+      accepts, each with its allowed range. In the driver these are the parameters of each operation, so nothing
+      outside the range ever reaches the hardware.</p></div>
+    <div><b>2 · Access to its output</b><p>What the device returns: the currents, traces, samples or images it
+      measures, written by the driver as result files that the user receives at the end of each job.</p></div>
+    <div><b>3 · A description</b><p>What the device is and what it does, in words a user can act on: its physics,
+      what each operation is for, its limits and a first example. It becomes the device's page on the hub.</p></div>
+  </div>
+
+  <h2>Free or paid</h2>
+  <p>The owner sets the terms of each device on <i>My hardware</i> → <i>Terms</i>:</p>
+  <ul>
+    <li><b>Free.</b> Users run the device on their own account time; nothing is charged for the device.</li>
+    <li><b>Paid.</b> The owner sets a price per hour in US dollars. Users see the price on the device's card before
+      they run anything. Time is counted as execution time, in started seconds per job, including the instrument's
+      set-up and excluding time spent in the queue. A device at $60 per hour costs $0.0167 per second.</li>
+  </ul>
+  <p>Terms can be changed at any time and apply to jobs started afterwards. Who may use the device is a separate
+    choice: every account, only accounts the owner grants time, or only the node's admins. Card payments are not open
+    yet. Until they are, the price is shown but not charged, and the start of charging will be announced in advance.</p>
 
   <div class="grid3">
     <div><b>Outbound connection only</b><p>The agent connects out to the hub over HTTPS. Nothing listens on the laboratory network and no port is opened.</p></div>
@@ -101,8 +125,8 @@ class CrossbarDriver(Driver):
       365 days).</li>
     <li><b>Directory listing.</b> A device is listed publicly only after review. A device that misbehaves or is
       reported may be unlisted or switched off, and its owner is informed.</li>
-    <li><b>Availability.</b> The network is offered as is, without guarantees of availability. Hardware time is
-      currently free; any change will be announced before it applies.</li>
+    <li><b>Availability.</b> The network is offered as is, without guarantees of availability. Each device's terms
+      (free, or paid at the owner's hourly price) are shown on its card; the hub's own hardware is free.</li>
   </ul>
 
   <div class="actions">
