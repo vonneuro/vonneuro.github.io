@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VonNeuro — a programming system for physical computing</title>
-<meta name="description" content="VonNeuro is a language, compiler and runtime for computation by physical dynamics: p-bits, annealers, memristive and analog circuits, neuromorphic chips. Worked examples run on laboratory hardware through vonNeuro Messenger, from Python or VS Code.">
+<meta name="description" content="VonNeuro is a language, compiler and runtime for computation by physical dynamics: p-bits, annealers, memristive and analog circuits, neuromorphic chips running spiking neural networks. Worked examples run on laboratory hardware through vonNeuro Messenger, from Python or VS Code.">
 <meta property="og:title" content="VonNeuro — a programming system for physical computing">
 <meta property="og:description" content="Minimise, sample or evolve: programs with computational and thermodynamic contracts, compiled onto physical devices.">
 <meta name="theme-color" content="#0C0A11">
@@ -778,14 +778,17 @@ $ vnstat --run 4417
     <div class="rail">
       <span class="rail-tick"></span>
       <span class="label">Examples</span>
-      <p class="rail-note">Run on 27 October 2026 on the laboratory bench. Output reproduced as printed.</p>
+      <p class="rail-note">Examples 1–5 run on 27 October 2026, 6–8 in November 2026, on the laboratory
+        bench. Output reproduced as printed.</p>
     </div>
     <div class="col">
       <h2 class="h-sec">Worked examples on a laboratory bench</h2>
       <p class="lede">The bench used here is small and deliberately heterogeneous: sixteen memristive
         devices and sixteen series-RC circuits behind two 16-channel analog multiplexers, measured
         with an Analog Discovery Studio, and a hardware sampler of sixteen probabilistic bits (p-bits)
-        performing Gibbs updates. It is reached only through Messenger, as any connected device is.</p>
+        performing Gibbs updates. Since November it also holds a single memristor on its own pulse rig,
+        written by the rate of its pulses, and a BrainChip AKD1500 neuromorphic processor that runs
+        spiking neural networks. It is reached only through Messenger, as any connected device is.</p>
       <p class="lede">Each script starts with a <span class="mono"># vonNeuro</span> line and runs
         unchanged from VS Code, from the browser's Python lab, or from a terminal with
         <span class="mono">python -m vonneuro_messenger.lab script.py</span>. The names
@@ -1006,6 +1009,84 @@ total-variation distance: 0.046  (sampling noise alone ~ 0.141)</pre>
         <p style="margin:10px 0 0; font-size:13.5px; color:var(--txt-soft)">The browser game is available on
           request from the Play page, with a Messenger account.</p>
       </div>
+
+      <div class="ex rv" id="ex-ffnn">
+        <h3>6 · A feedforward network of RC neurons learns XOR <span class="kw" style="color:var(--heat)">evolve</span></h3>
+        <p>Each neuron is a protocol on one slow RC circuit: a bias pulse, then one pulse per input at
+          the weight voltage, lasting the input times τ. The capacitor voltage at the end is the
+          neuron's output, read from the discharge current. Between layers a threshold is applied in
+          time: below a learned level no pulse is sent. A 2-2-1 network is trained on a model of the
+          circuit fitted to 25 calibration jobs, then fine-tuned with its forward pass on the hardware.
+          It classified all four inputs correctly with the model's parameters alone and in every
+          fine-tuning epoch; 197 jobs, 51 min. The hidden neurons learned AND and NOR, and the output
+          neuron computes NOT (AND or NOR), which is XOR.</p>
+        <div class="ex-grid">
+          <div class="out">
+            <div class="out-bar"><span>output · rc_ffnn.py</span><span>2026-11-04 · bench, RC circuit 3</span></div>
+<pre>input   output    class
+ 0,0    0.75 V    0
+ 0,1    2.06 V    1
+ 1,0    2.38 V    1
+ 1,1    1.23 V    0
+threshold 1.66 V · 4/4 correct · closest case 0.40 V from the threshold</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex rv" id="ex-multichip">
+        <h3>7 · Three chips in one program: memory, compute, dice <span class="kw" style="color:var(--ok)">sample</span></h3>
+        <p>One script uses three devices, each for what it does well. The rate-coded memristor stores a
+          weight: a 2 s train of short pulses at 2 Hz leaves its resistance unchanged, at 100 Hz it lowers
+          it by 30–45 %, and the relative drop sets the weight. An RC neuron computes with that weight,
+          and its output voltage sets the field h of sixteen p-bits on the hardware sampler, which answer
+          “yes” with probability σ(2h). The same input therefore gives a different decision depending on
+          what the memory holds. 45 jobs, about 7 min.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Memory write</th><th>Resistance drop</th><th>Weight</th><th>RC output, x = 0 / 0.5 / 1</th><th>P(yes) measured</th><th>σ(2h)</th></tr></thead>
+            <tbody>
+              <tr><td>2 Hz, weak</td><td>0 %</td><td>0.52 V</td><td class="mono">0.38 / 0.39 / 0.40 V</td><td class="mono">0.05 / 0.05 / 0.06</td><td class="mono">0.08 / 0.08 / 0.08</td></tr>
+              <tr><td>100 Hz, strong</td><td>43 %</td><td>3.50 V</td><td class="mono">0.36 / 1.45 / 1.99 V</td><td class="mono">0.06 / 0.88 / 0.97</td><td class="mono">0.07 / 0.86 / 0.98</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:12px">Each probability comes from 64 draws (about ±0.03–0.06 from sampling alone).
+          The memristor's absolute resistance drifts from day to day; the relative drop during a write
+          is what repeats, so the weight is read from it.</p>
+      </div>
+
+      <div class="ex rv" id="ex-snn">
+        <h3>8 · Spiking neural network inference on an AKD1500 <span class="kw" style="color:var(--heat)">evolve</span></h3>
+        <p>A BrainChip AKD1500 neuromorphic processor, on a BrainBoard1500 driven through a small USB
+          bridge, runs a fully specified four-neuron spiking network: each output neuron fires when its
+          one input from the ring is present, so y = [x3, x0, x1, x2]. The network is first emulated in
+          the official Akida 2.19.3 software backend, then compiled for the AKD1500 (an 860-byte
+          program) and run on the chip. All 16 binary inputs gave the same spikes on the hardware as
+          in the emulation. Users can emulate their own four-neuron networks, with any signed 4-bit
+          weights and thresholds, and compare them with the recorded chip run.</p>
+        <div class="ex-grid">
+          <div class="editor">
+            <div class="tabs"><span class="tabname">akida_known_network.py</span></div>
+<pre><span class="c"># vonNeuro</span>
+<span class="c"># The same spiking network, emulated and on the AKD1500.</span>
+board = client.device(<span class="s">"admin/brainboard1500"</span>)
+emulated = board.run(<span class="s">"simulate"</span>)            <span class="c"># Akida software backend, no board power</span>
+chip = board.run(<span class="s">"hardware_result"</span>)        <span class="c"># or "run_known_network" for a live run</span>
+sim = {tuple(c[<span class="s">"input"</span>]): c[<span class="s">"output"</span>] <span class="k">for</span> c <span class="k">in</span> emulated[<span class="s">"cases"</span>]}
+same = sum(sim[tuple(c[<span class="s">"input"</span>])] == c[<span class="s">"actual"</span>] <span class="k">for</span> c <span class="k">in</span> chip[<span class="s">"cases"</span>])
+<span class="k">print</span>(<span class="s">f"chip and emulation agree on {same}/{len(chip['cases'])} inputs"</span>)</pre>
+          </div>
+          <div class="out">
+            <div class="out-bar"><span>output · full script in hardware_scripts</span><span>2026-11-08 · bench, AKD1500</span></div>
+<pre>x = 0001   chip y = 1000   emulated y = 1000   same
+x = 0110   chip y = 0011   emulated y = 0011   same
+x = 1011   chip y = 1101   emulated y = 1101   same
+x = 1111   chip y = 1111   emulated y = 1111   same
+...
+chip and emulation agree on 16/16 inputs</pre>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1031,16 +1112,17 @@ total-variation distance: 0.046  (sampling noise alone ~ 0.141)</pre>
           <span class="kw">python · open source, MIT</span>
           <h3>The Python API</h3>
           <p><span class="mono">vonneuro_messenger</span> is a thin client over Messenger's HTTP API,
-             with <span class="mono">httpx</span> as its only dependency. The examples above use five
-             of its calls: <span class="mono">devices()</span>, <span class="mono">pulse()</span>,
-             <span class="mono">volt_run()</span>, <span class="mono">nano_sample()</span> and
-             <span class="mono">memristor_array()</span>.</p>
+             with <span class="mono">httpx</span> as its only dependency. The examples above use calls
+             such as <span class="mono">devices()</span>, <span class="mono">pulse()</span>,
+             <span class="mono">volt_run()</span>, <span class="mono">nano_sample()</span>,
+             <span class="mono">memristor_array()</span> and
+             <span class="mono">device(ref).run(operation)</span> for any connected device.</p>
           <pre class="cmdline">pip install git+https://github.com/vonneuro/messenger-api.git</pre>
           <p class="foot"><a href="https://github.com/vonneuro/messenger-api" rel="noopener">github.com/vonneuro/messenger-api</a> · method reference, HTTP endpoints, 16 example studies</p>
         </article>
 
         <article class="tool">
-          <span class="kw">editor · vs code 0.1.3</span>
+          <span class="kw">editor · vs code 0.1.5</span>
           <h3>The VS Code extension</h3>
           <p>Sign in once; the session is kept in VS Code's secret storage. A Python file that begins
              with <span class="mono"># vonNeuro</span> gets a <em>Run on vonNeuro</em> action: the script
@@ -1079,7 +1161,7 @@ total-variation distance: 0.046  (sampling noise alone ~ 0.141)</pre>
         <div class="grid">
           <div><b>connect</b><p>The existing control stack is kept: a short driver exposes only the operations and measurements the device already supports.</p></div>
           <div><b>describe</b><p>Each operation declares typed, bounded parameters; Messenger checks them, and the driver checks every job again.</p></div>
-          <div><b>share</b><p>New devices start private. Owners open them to every account or grant time to selected users.</p></div>
+          <div><b>share</b><p>New devices start private. Owners open them to every account or grant time to selected users, free or at a price per hour they set.</p></div>
         </div>
         <div class="hero-cta" style="margin-top:18px">
           <a class="btn" href="connect.html">Connect hardware</a>
@@ -1333,8 +1415,10 @@ total-variation distance: 0.046  (sampling noise alone ~ 0.141)</pre>
           </thead>
           <tbody>
             <tr><td>Memristive devices behind an analog multiplexer</td><td><span class="mode m3">evolve</span></td><td>Terminal energy per run, ∫V·I dt</td><td class="mono">2, 4</td></tr>
-            <tr><td>Series-RC circuits behind an analog multiplexer</td><td><span class="mode m3">evolve</span></td><td>Source energy per run, ∫V·I dt</td><td class="mono">1, 5</td></tr>
-            <tr><td>Hardware p-bit sampler, 16 p-bits</td><td><span class="mode m2">sample</span> <span class="mode m1">minimise</span></td><td>Not instrumented</td><td class="mono">3</td></tr>
+            <tr><td>Series-RC circuits behind an analog multiplexer</td><td><span class="mode m3">evolve</span></td><td>Source energy per run, ∫V·I dt</td><td class="mono">1, 5, 6, 7</td></tr>
+            <tr><td>Hardware p-bit sampler, 16 p-bits</td><td><span class="mode m2">sample</span> <span class="mode m1">minimise</span></td><td>Not instrumented</td><td class="mono">3, 7</td></tr>
+            <tr><td>Rate-coded memristor on a pulse rig</td><td><span class="mode m3">evolve</span></td><td>Not reported yet</td><td class="mono">7</td></tr>
+            <tr><td>Neuromorphic processor, BrainChip AKD1500</td><td><span class="mode m3">evolve</span></td><td>Not instrumented</td><td class="mono">8</td></tr>
             <tr><td>CPU models — analog, memristor, p-bit, spiking</td><td><span class="mode m2">sample</span> <span class="mode m3">evolve</span></td><td>Reference only</td><td class="mono">5</td></tr>
             <tr><td>GPU — CUDA, ROCm, Metal, Vulkan</td><td><span class="mode m1">minimise</span> <span class="mode m2">sample</span> <span class="mode m3">evolve</span></td><td>Board telemetry</td><td></td></tr>
             <tr><td>p-bit fabric on FPGA</td><td><span class="mode m2">sample</span> <span class="mode m1">minimise</span></td><td>Rail measurement</td><td></td></tr>
