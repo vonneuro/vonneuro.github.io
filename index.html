@@ -1283,6 +1283,16 @@ chip and emulation agree on 16/16 inputs</pre>
              rate.</p>
           <p class="foot">Reservoirs · memristive networks · neural cultures</p>
         </div>
+        <div class="card" style="grid-column:1/-1">
+          <h4>Local error rule on a spiking layer</h4>
+          <div class="eq">ΔW<sub>ij</sub> = (t<sub>i</sub> − o<sub>i</sub>) · x<sub>j</sub> &nbsp;&nbsp; Δθ<sub>i</sub> = −(t<sub>i</sub> − o<sub>i</sub>)</div>
+          <p>The output layer of spike-based backpropagation (Renner et al., Nat. Commun. 15, 9691, 2024, on
+             Intel Loihi): a weight changes by the presynaptic spike times the output error. It needs no stored
+             activations, and with integer weights held in the chip's 4-bit range the learned layer is the
+             deployed layer. A four-neuron layer learns a 2-bit comparator in five epochs, and the
+             Akida 2.19.3 software backend reproduces its truth table on all 16 inputs.</p>
+          <p class="foot">Spiking layers · integer weights · BrainBoard1500, emulated (the chip's hardware job runs one fixed network)</p>
+        </div>
       </div>
     </div>
   </div>
