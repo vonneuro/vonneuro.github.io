@@ -9,16 +9,16 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/network.css">
 <style>
 form{display:grid;gap:14px;max-width:560px}
 .field{display:flex;flex-direction:column;gap:6px;font-family:var(--f-label);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-soft)}
-.field input{width:100%;font-family:var(--f-body);font-size:15px;color:var(--txt);background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:9px 11px}
+.field input{width:100%;font-family:var(--f-body);font-size:15px;color:var(--txt);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 11px}
 .field input:focus{outline:none;border-color:var(--arc);box-shadow:0 0 0 3px var(--arc-dim)}
 fieldset{border:0;padding:0;margin:4px 0 0;display:grid;gap:10px}
 legend{padding:0;margin-bottom:10px}
-.topic{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start;border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:12px 14px;cursor:pointer}
+.topic{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:12px 14px;cursor:pointer}
 .topic:hover{border-color:#3A3350}
 .topic:has(input:checked){border-color:var(--arc)}
 .topic input{width:17px;height:17px;margin:3px 0 0;accent-color:var(--arc);grid-row:span 2}
@@ -28,7 +28,7 @@ legend{padding:0;margin-bottom:10px}
 .row{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:4px}
 .error{color:#FF9C8A;font-size:14px;margin:0}
 .note{color:var(--txt-soft);font-size:13.5px;margin:0;max-width:60ch}
-.done{border:1px solid var(--line);border-left:2px solid var(--ok);background:var(--panel);border-radius:3px;padding:18px 20px;max-width:560px}
+.done{border:1px solid var(--line);border-left:2px solid var(--ok);background:var(--panel);border-radius:10px;padding:18px 20px;max-width:560px}
 .done h2{margin:0 0 .4rem}
 .done p{margin:0}
 </style>
