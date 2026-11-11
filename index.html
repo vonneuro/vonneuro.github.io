@@ -439,10 +439,10 @@ pre.cmdline{padding:9px 12px; font-size:12px; line-height:1.5; color:var(--txt);
       <b>VonNeuro</b><span>OS</span>
     </a>
     <nav class="nav" aria-label="Primary">
+      <a href="#messenger">Hardware</a>
       <a href="#regimes">Regimes</a>
       <a href="#volt">VOLT</a>
       <a href="#examples">Examples</a>
-      <a href="#messenger">Access</a>
       <a href="#stack">Stack</a>
       <a href="#physics">Physics</a>
       <a href="#evidence">Evidence</a>
@@ -462,28 +462,28 @@ pre.cmdline{padding:9px 12px; font-size:12px; line-height:1.5; color:var(--txt);
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <p class="eyebrow label"><span class="dot"></span> A programming system for physical computing · in development</p>
+        <p class="eyebrow label"><span class="dot"></span> Live hardware, programmable remotely · language and compiler in development</p>
         <h1 class="h-display hero-h"><em class="w1">Minimise</em>, <em class="w2">sample</em>,<br>or <em class="w3">evolve</em>.</h1>
         <p class="lede hero-sub">
-          VonNeuro is a language, compiler and runtime for computation carried out by physical
-          dynamics: stochastic bits, annealers, memristive and analog circuits, neuromorphic chips
-          and, in principle, living tissue. A program states which of three tasks it poses —
-          minimising an objective, sampling a distribution, or evolving a driven system — together
-          with the conditions a result must satisfy and the thermodynamic boundary of the process.
-          The compiler maps that statement onto a device, or rejects it and names the condition the
-          device cannot meet.
+          VonNeuro runs physical computing hardware you can control remotely, live, today.
+          <b>vonNeuro Messenger</b> is a cloud job server in front of real devices — memristor
+          arrays, RC circuits, a p-bit sampler, a spiking neuromorphic chip and a sound-card scope —
+          reachable from Python, from VS Code or from the browser. Create an account and run a
+          measurement on the bench in minutes.
         </p>
         <p class="lede hero-sub" style="margin-top:14px">
-          Programs reach hardware through <b>vonNeuro Messenger</b>, a job server in front of connected
-          devices, from Python or from VS Code. The examples on this page were run on a laboratory bench
-          of memristors, RC circuits and a p-bit sampler, and their output is reproduced as printed.
+          On top of the service we are building <b>VOLT</b>, a language and compiler for computation
+          carried out by physical dynamics. A program states whether it minimises an objective,
+          samples a distribution or evolves a driven system, with the conditions a result must
+          satisfy; the compiler maps it onto a device or names the condition the device cannot meet.
         </p>
         <div class="hero-cta">
-          <a class="btn" href="#examples">Worked examples</a>
+          <a class="btn" href="signup.html">Create an account</a>
+          <a class="btn btn-ghost" href="hardware.html">Devices online</a>
           <a class="btn btn-ghost" href="#tools">Python and VS Code</a>
           <a class="btn btn-ghost" href="#volt">The language</a>
         </div>
-        <p class="hero-meta">Python API · VS Code extension · Messenger job server · VOLT language</p>
+        <p class="hero-meta">Live hardware · Messenger job server · Python API · VS Code extension · VOLT language</p>
       </div>
 
       <figure class="monitor rv" style="margin:0">
@@ -511,6 +511,105 @@ pre.cmdline{padding:9px 12px; font-size:12px; line-height:1.5; color:var(--txt);
         <li>event ASIC</li><li>photonic operator</li><li>neuronal culture</li><li>reaction network</li>
         <li>FPGA</li><li>GPU · CUDA / ROCm / Metal / Vulkan</li><li>x86-64 · arm64 · riscv64</li>
       </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ access: messenger, python, vs code ══════════════════ -->
+<section id="messenger" class="sec-pad">
+  <div class="wrap rail-row">
+    <div class="rail">
+      <span class="rail-tick"></span>
+      <span class="label">Hardware</span>
+      <p class="rail-note">Live devices, online now. Hardware stays in the laboratory that owns it; programs reach it as jobs.</p>
+    </div>
+    <div class="col">
+      <h2 class="h-sec">Messenger, the Python API and VS Code</h2>
+      <p class="lede">Messenger is the job server between users and hardware. It authenticates each
+        request, checks it against the limits declared for the device, queues it on the shared
+        instrument, meters the time used, and returns the result with its raw data, settings and
+        device identity. A small agent on the computer next to the hardware connects it to the
+        server, so a device does not have to be redesigned to be reachable.</p>
+
+      <div class="tools rv" id="tools">
+        <article class="tool">
+          <span class="kw">python · open source, MIT</span>
+          <h3>The Python API</h3>
+          <p><span class="mono">vonneuro_messenger</span> is a thin client over Messenger's HTTP API,
+             with <span class="mono">httpx</span> as its only dependency. The examples below use calls
+             such as <span class="mono">devices()</span>, <span class="mono">pulse()</span>,
+             <span class="mono">volt_run()</span>, <span class="mono">nano_sample()</span>,
+             <span class="mono">memristor_array()</span> and
+             <span class="mono">device(ref).run(operation)</span> for any connected device.</p>
+          <pre class="cmdline">pip install git+https://github.com/vonneuro/messenger-api.git</pre>
+          <p class="foot"><a href="https://github.com/vonneuro/messenger-api" rel="noopener">github.com/vonneuro/messenger-api</a> · method reference, HTTP endpoints, 16 example studies</p>
+        </article>
+
+        <article class="tool">
+          <span class="kw">editor · vs code 0.1.5</span>
+          <h3>The VS Code extension</h3>
+          <p>Sign in once; the session is kept in VS Code's secret storage. A Python file that begins
+             with <span class="mono"># vonNeuro</span> gets a <em>Run on vonNeuro</em> action: the script
+             runs with your own Python, figures open beside the code, and the status bar shows each
+             job, its queue time and its time on the hardware. The sidebar lists devices, recent jobs
+             and the nodes you administer.</p>
+          <pre class="cmdline">code --install-extension vonneuro-vscode-0.1.5.vsix</pre>
+          <p class="foot"><a href="downloads/vonneuro-vscode-0.1.5.vsix" download>Download the extension (.vsix)</a> · source at <a href="https://github.com/vonneuro/vn-vscode" rel="noopener">github.com/vonneuro/vn-vscode</a> · installs the Python client on first run if it is missing</p>
+        </article>
+
+        <article class="tool">
+          <span class="kw">browser · no install</span>
+          <h3>Messenger and the Python lab</h3>
+          <p>The Messenger dashboard submits jobs and returns their files. Its Python lab runs the same
+             scripts in the browser (Pyodide), with plots and downloads; run results there are deleted
+             after 24 hours, while saved scripts are kept. Every account gets one hour of bench
+             time per week.</p>
+          <p class="foot"><a href="signup.html">Create an account</a> · <a href="https://hub.vonneuro.com/python">Python lab</a> · <a href="https://hub.vonneuro.com/guide">guide</a></p>
+        </article>
+      </div>
+
+      <div class="jobtypes rv">
+        <div><code>volt_run</code><span>A VOLT 0.1 program on a device that supports VOLT, such as <span class="mono">memristor:N</span> or <span class="mono">rc:N</span> on the bench. <span class="mono">pulse()</span> is a one-step program of this kind.</span></div>
+        <div><code>messenger_instrument</code><span>A capture from the instrument, including guarded I–V sweeps of any memristor in the array.</span></div>
+        <div><code>volt_process</code><span>An installed VOLT processing program applied to your inputs; returns <span class="mono">result.json</span>.</span></div>
+        <div><code>device run</code><span>Any operation a connected device declares, with typed, bounded parameters: <span class="mono">client.device("owner/slug").run(operation, ...)</span>.</span></div>
+      </div>
+
+      <div class="callout rv" id="network">
+        <h4>Connecting other hardware</h4>
+        <p>Messenger is a network: any laboratory can connect its own devices. An agent on the computer
+          next to the device dials out to Messenger, publishes the operations the device offers with
+          their parameter ranges, and executes incoming jobs through the owner's driver, which decides
+          what is safe. The bench shown in the examples below is one node on this network; every device has a page with its
+          status and usage.</p>
+        <div class="grid">
+          <div><b>connect</b><p>The existing control stack is kept: a short driver exposes only the operations and measurements the device already supports.</p></div>
+          <div><b>describe</b><p>Each operation declares typed, bounded parameters; Messenger checks them, and the driver checks every job again.</p></div>
+          <div><b>share</b><p>New devices start private. Owners open them to every account or grant time to selected users, free or at a price per hour they set.</p></div>
+        </div>
+        <div class="hero-cta" style="margin-top:18px">
+          <a class="btn" href="connect.html">Connect hardware</a>
+          <a class="btn btn-ghost" href="hardware.html">Devices on the network</a>
+        </div>
+        <p class="tail">Messenger provides the endpoint, registry and job path. Scientific claims about a
+          device rest on its declaration and on the evidence its measurements provide.</p>
+      </div>
+
+      <div class="callout rv">
+        <h4>From a new device to a backend</h4>
+        <p>Many candidate processors have no settled programming model. A prototype can start with a
+          partial device contract; characterisation runs then show which controls, observables and
+          dynamical regimes are reproducible enough to support computation, and a digital reference
+          shows what the device gains and where it departs from the intended model.</p>
+        <div class="grid">
+          <div><b>discover</b><p>Explore relaxation, sampling and driven regimes to find a usable computation in a new physical device.</p></div>
+          <div><b>characterise</b><p>Map response, noise, drift, stability, latency and energy across the operating range.</p></div>
+          <div><b>develop</b><p>Refine controls, calibration and compilation together, then fix the result as a versioned backend.</p></div>
+        </div>
+        <p class="tail">The same path applies to a one-off research chip, to successive fabrication
+          revisions and to a production device: connect it, measure it, formalise its contract, and
+          test the hardware against executable computational criteria.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1086,105 +1185,6 @@ x = 1111   chip y = 1111   emulated y = 1111   same
 chip and emulation agree on 16/16 inputs</pre>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════ access: messenger, python, vs code ══════════════════ -->
-<section id="messenger" class="sec-pad">
-  <div class="wrap rail-row">
-    <div class="rail">
-      <span class="rail-tick"></span>
-      <span class="label">Access</span>
-      <p class="rail-note">Hardware stays in the laboratory that owns it; programs reach it as jobs.</p>
-    </div>
-    <div class="col">
-      <h2 class="h-sec">Messenger, the Python API and VS Code</h2>
-      <p class="lede">Messenger is the job server between users and hardware. It authenticates each
-        request, checks it against the limits declared for the device, queues it on the shared
-        instrument, meters the time used, and returns the result with its raw data, settings and
-        device identity. A small agent on the computer next to the hardware connects it to the
-        server, so a device does not have to be redesigned to be reachable.</p>
-
-      <div class="tools rv" id="tools">
-        <article class="tool">
-          <span class="kw">python · open source, MIT</span>
-          <h3>The Python API</h3>
-          <p><span class="mono">vonneuro_messenger</span> is a thin client over Messenger's HTTP API,
-             with <span class="mono">httpx</span> as its only dependency. The examples above use calls
-             such as <span class="mono">devices()</span>, <span class="mono">pulse()</span>,
-             <span class="mono">volt_run()</span>, <span class="mono">nano_sample()</span>,
-             <span class="mono">memristor_array()</span> and
-             <span class="mono">device(ref).run(operation)</span> for any connected device.</p>
-          <pre class="cmdline">pip install git+https://github.com/vonneuro/messenger-api.git</pre>
-          <p class="foot"><a href="https://github.com/vonneuro/messenger-api" rel="noopener">github.com/vonneuro/messenger-api</a> · method reference, HTTP endpoints, 16 example studies</p>
-        </article>
-
-        <article class="tool">
-          <span class="kw">editor · vs code 0.1.5</span>
-          <h3>The VS Code extension</h3>
-          <p>Sign in once; the session is kept in VS Code's secret storage. A Python file that begins
-             with <span class="mono"># vonNeuro</span> gets a <em>Run on vonNeuro</em> action: the script
-             runs with your own Python, figures open beside the code, and the status bar shows each
-             job, its queue time and its time on the hardware. The sidebar lists devices, recent jobs
-             and the nodes you administer.</p>
-          <pre class="cmdline">code --install-extension vonneuro-vscode-0.1.5.vsix</pre>
-          <p class="foot"><a href="downloads/vonneuro-vscode-0.1.5.vsix" download>Download the extension (.vsix)</a> · source at <a href="https://github.com/vonneuro/vn-vscode" rel="noopener">github.com/vonneuro/vn-vscode</a> · installs the Python client on first run if it is missing</p>
-        </article>
-
-        <article class="tool">
-          <span class="kw">browser · no install</span>
-          <h3>Messenger and the Python lab</h3>
-          <p>The Messenger dashboard submits jobs and returns their files. Its Python lab runs the same
-             scripts in the browser (Pyodide), with plots and downloads; run results there are deleted
-             after 24 hours, while saved scripts are kept. Every account gets one hour of bench
-             time per week.</p>
-          <p class="foot"><a href="signup.html">Create an account</a> · <a href="https://hub.vonneuro.com/python">Python lab</a> · <a href="https://hub.vonneuro.com/guide">guide</a></p>
-        </article>
-      </div>
-
-      <div class="jobtypes rv">
-        <div><code>volt_run</code><span>A VOLT 0.1 program on a device that supports VOLT, such as <span class="mono">memristor:N</span> or <span class="mono">rc:N</span> on the bench. <span class="mono">pulse()</span> is a one-step program of this kind.</span></div>
-        <div><code>messenger_instrument</code><span>A capture from the instrument, including guarded I–V sweeps of any memristor in the array.</span></div>
-        <div><code>volt_process</code><span>An installed VOLT processing program applied to your inputs; returns <span class="mono">result.json</span>.</span></div>
-        <div><code>device run</code><span>Any operation a connected device declares, with typed, bounded parameters: <span class="mono">client.device("owner/slug").run(operation, ...)</span>.</span></div>
-      </div>
-
-      <div class="callout rv" id="network">
-        <h4>Connecting other hardware</h4>
-        <p>Messenger is a network: any laboratory can connect its own devices. An agent on the computer
-          next to the device dials out to Messenger, publishes the operations the device offers with
-          their parameter ranges, and executes incoming jobs through the owner's driver, which decides
-          what is safe. The bench above is one node on this network; every device has a page with its
-          status and usage.</p>
-        <div class="grid">
-          <div><b>connect</b><p>The existing control stack is kept: a short driver exposes only the operations and measurements the device already supports.</p></div>
-          <div><b>describe</b><p>Each operation declares typed, bounded parameters; Messenger checks them, and the driver checks every job again.</p></div>
-          <div><b>share</b><p>New devices start private. Owners open them to every account or grant time to selected users, free or at a price per hour they set.</p></div>
-        </div>
-        <div class="hero-cta" style="margin-top:18px">
-          <a class="btn" href="connect.html">Connect hardware</a>
-          <a class="btn btn-ghost" href="hardware.html">Devices on the network</a>
-        </div>
-        <p class="tail">Messenger provides the endpoint, registry and job path. Scientific claims about a
-          device rest on its declaration and on the evidence its measurements provide.</p>
-      </div>
-
-      <div class="callout rv">
-        <h4>From a new device to a backend</h4>
-        <p>Many candidate processors have no settled programming model. A prototype can start with a
-          partial device contract; characterisation runs then show which controls, observables and
-          dynamical regimes are reproducible enough to support computation, and a digital reference
-          shows what the device gains and where it departs from the intended model.</p>
-        <div class="grid">
-          <div><b>discover</b><p>Explore relaxation, sampling and driven regimes to find a usable computation in a new physical device.</p></div>
-          <div><b>characterise</b><p>Map response, noise, drift, stability, latency and energy across the operating range.</p></div>
-          <div><b>develop</b><p>Refine controls, calibration and compilation together, then fix the result as a versioned backend.</p></div>
-        </div>
-        <p class="tail">The same path applies to a one-off research chip, to successive fabrication
-          revisions and to a production device: connect it, measure it, formalise its contract, and
-          test the hardware against executable computational criteria.</p>
       </div>
     </div>
   </div>
