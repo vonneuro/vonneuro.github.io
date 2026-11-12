@@ -50,14 +50,13 @@ input:focus,textarea:focus{outline:none;border-color:var(--arc);box-shadow:0 0 0
 pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;overflow-x:auto;color:var(--txt);margin:.5rem 0 0}
 .mono{font-family:var(--f-code);font-size:.92em}
 .hidden{display:none}
-.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:12px 0 18px}
+.plans{display:grid;grid-template-columns:minmax(0,1fr);max-width:480px;gap:14px;margin:12px 0 12px}
+.future{color:var(--txt-mid);font-size:14px;max-width:480px;margin:0 0 18px}
 .plan{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:16px}
 .plan h2{font-family:var(--f-display);font-weight:600;font-size:1.2rem;margin:0}
 .plan p{color:var(--txt-mid);font-size:14.5px;margin:0;flex:1}
 .plan .btn{align-self:stretch}
 .plan.free{border-color:var(--arc)}
-.plan.later{opacity:.6;cursor:default;user-select:none}
-.plan.later .label{align-self:stretch;text-align:center;padding:10px 0}
 .donate{display:flex;gap:8px;align-items:stretch}
 .donate .btn{flex:1;min-width:0;background:transparent;color:var(--txt);border-color:var(--line)}
 .donate-help{flex:none;width:36px;background:none;border:1px solid var(--line);border-radius:6px;color:var(--txt-mid);font-family:var(--f-body);font-weight:600;cursor:pointer}
@@ -110,21 +109,12 @@ pre{font-family:var(--f-code);font-size:13px;background:var(--bg);border:1px sol
           <button class="donate-help" type="button" id="donate-help" aria-label="Why donate?" aria-expanded="false" aria-controls="donate-why">?</button>
         </div>
       </div>
-      <div class="plan later" aria-disabled="true">
-        <h2>Silver</h2>
-        <p>Time on D-Wave.</p>
-        <span class="label">Not available yet</span>
-      </div>
-      <div class="plan later" aria-disabled="true">
-        <h2>Pro</h2>
-        <p>Time on wetware.</p>
-        <span class="label">Not available yet</span>
-      </div>
       <p class="donate-why hidden" id="donate-why">Support free research in physical AI, nonequilibrium systems across
         physical and biological systems, nonequilibrium thermodynamics, energy efficiency and AI. Click to support the
         <a href="https://np.institute" target="_blank" rel="noopener">institute</a> with as little as 50¢: each click adds
         50 cents. vonNeuro has a partnership with INeP, the Institute for Nonequilibrium Phenomena. Donations are not open yet.</p>
     </div>
+    <p class="future">Every account is on the Free plan. In the future we may also offer time on D-Wave quantum annealers.</p>
     <button class="btn btn-ghost" type="button" id="plan-back">Back</button>
   </div>
 
