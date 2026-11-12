@@ -131,6 +131,14 @@ h1.hero-h{font-size:clamp(2rem,3.5vw,2.85rem); line-height:1.1}
 h1.hero-h .soft{color:var(--txt-soft)}
 .hero-sub{margin-top:26px}
 .hero-cta{display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:34px}
+.btn .play{width:0; height:0; border-style:solid; border-width:5px 0 5px 8px; border-color:transparent transparent transparent currentColor}
+.btn small{font-size:12.5px; color:var(--txt-soft); font-weight:400}
+.intro-dlg{width:min(960px,calc(100vw - 32px)); max-width:none; padding:0; border:1px solid var(--line); border-radius:10px; background:var(--panel); color:var(--txt)}
+.intro-dlg::backdrop{background:rgba(0,0,0,.72)}
+.intro-dlg .bar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; border-bottom:1px solid var(--line); font-size:14px; font-weight:600}
+.intro-dlg .x{background:none; border:1px solid var(--line); border-radius:6px; color:var(--txt-mid); font-size:13px; padding:5px 10px; cursor:pointer}
+.intro-dlg .x:hover{color:var(--txt); border-color:#41454D}
+.intro-dlg video{display:block; width:100%; aspect-ratio:16/9; background:#000}
 .cmd{display:flex; align-items:center; gap:14px; border:1px solid var(--line); background:rgba(19,21,25,.9); border-radius:6px; padding:8px 8px 8px 14px; font-family:var(--f-code); font-size:14px; color:var(--txt); transition:border-color .2s ease}
 .cmd:hover{border-color:#33373F}
 .cmd .sig{color:var(--arc-2)}
@@ -459,7 +467,12 @@ pre.cmdline{padding:9px 12px; font-size:12px; line-height:1.5; color:var(--txt);
           <a class="btn" href="signup.html">Create an account</a>
           <a class="btn btn-ghost" href="https://hub.vonneuro.com/guide">Read the guide</a>
           <a class="btn btn-ghost" href="#examples">See worked examples</a>
+          <a class="btn btn-ghost" id="intro-open" href="assets/video/vonneuro-intro.mp4"><span class="play" aria-hidden="true"></span>Watch the introduction <small>5 min</small></a>
         </div>
+        <dialog class="intro-dlg" id="intro-dlg" aria-labelledby="intro-h">
+          <div class="bar"><span id="intro-h">An introduction to vonNeuro</span><button class="x" type="button" id="intro-close">Close</button></div>
+          <video id="intro-video" controls playsinline preload="none" data-src="assets/video/vonneuro-intro.mp4"></video>
+        </dialog>
         <p class="hero-meta">One hour of bench time per week with every account &middot; Python client is open source (MIT) &middot; A spin-off of <a href="https://np.institute" rel="noopener">INeP</a></p>
       </div>
 
@@ -1818,6 +1831,23 @@ chip and emulation agree on 16/16 inputs</pre>
 
   if (document.readyState === "complete") boot();
   else window.addEventListener("load", boot);
+})();
+</script>
+<script>
+/* Introduction video: opens in a dialog and waits for the viewer to press play; closing pauses it.
+   Without <dialog> support the link simply opens the file. */
+(function () {
+  var open = document.getElementById("intro-open"), dlg = document.getElementById("intro-dlg"),
+      video = document.getElementById("intro-video"), close = document.getElementById("intro-close");
+  if (!open || !dlg || typeof dlg.showModal !== "function") return;
+  open.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (!video.getAttribute("src")) { video.preload = "metadata"; video.src = video.dataset.src; }
+    dlg.showModal();
+  });
+  close.addEventListener("click", function () { dlg.close(); });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener("close", function () { video.pause(); });
 })();
 </script>
 <script>
