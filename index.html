@@ -470,7 +470,7 @@ pre.cmdline{padding:9px 12px; font-size:12px; line-height:1.5; color:var(--txt);
           <li><a href="device.html?ref=admin%2Fmux16">RC circuit board, 16 channels</a><small>admin/mux16 &middot; rc</small><span class="st">&mdash;</span></li>
           <li><a href="device.html?ref=admin%2Fpbit">Hardware p-bit sampler, 16 p-bits</a><small>admin/pbit &middot; pbit</small><span class="st">&mdash;</span></li>
           <li><a href="device.html?ref=admin%2Fbrainboard1500">BrainChip AKD1500 neuromorphic board</a><small>admin/brainboard1500 &middot; neuromorphic</small><span class="st">&mdash;</span></li>
-          <li><a href="device.html?ref=admin%2Fsnn-emulator">Spiking-network emulator</a><small>admin/snn-emulator &middot; neuromorphic</small><span class="st">&mdash;</span></li>
+          <li><a href="device.html?ref=admin%2Fsnn-emulator">Spiking-network and p-spin emulator</a><small>admin/snn-emulator &middot; neuromorphic</small><span class="st">&mdash;</span></li>
           <li><a href="device.html?ref=admin%2Flabonchip1">Rate-coded memristor</a><small>admin/labonchip1 &middot; memristor</small><span class="st">&mdash;</span></li>
           <li><a href="device.html?ref=admin%2Ffpaa">Field-programmable analog array</a><small>admin/fpaa &middot; fpaa</small><span class="st">&mdash;</span></li>
         </ul>
@@ -1392,6 +1392,7 @@ chip and emulation agree on 16/16 inputs</pre>
             <tr><td>Memristive devices behind an analog multiplexer</td><td><span class="mode m3">evolve</span></td><td>Terminal energy per run, ∫V·I dt</td><td class="mono">2, 4</td></tr>
             <tr><td>Series-RC circuits behind an analog multiplexer</td><td><span class="mode m3">evolve</span></td><td>Source energy per run, ∫V·I dt</td><td class="mono">1, 5, 6, 7</td></tr>
             <tr><td>Hardware p-bit sampler, 16 p-bits</td><td><span class="mode m2">sample</span> <span class="mode m1">minimise</span></td><td>Not instrumented</td><td class="mono">3, 7</td></tr>
+            <tr><td>Hardware p-spin sampler, 16 spins, couplings of any order (on the spiking-network emulator)</td><td><span class="mode m2">sample</span> <span class="mode m1">minimise</span></td><td>Not instrumented</td><td class="mono"></td></tr>
             <tr><td>Rate-coded memristor on a pulse rig</td><td><span class="mode m3">evolve</span></td><td>Not reported yet</td><td class="mono">7</td></tr>
             <tr><td>Neuromorphic processor, BrainChip AKD1500</td><td><span class="mode m3">evolve</span></td><td>Not instrumented</td><td class="mono">8</td></tr>
             <tr><td>Field-programmable analog array, Okika AN231E04</td><td><span class="mode m3">evolve</span></td><td>Not instrumented</td><td class="mono"></td></tr>
