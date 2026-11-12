@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Device · VonNeuro</title>
+<title>Device · vonNeuro</title>
 <meta name="description" content="One device on the vonNeuro network: what it is, the operations it offers and their parameters, and how to run it.">
 <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <body>
 <div class="wrap narrow">
   <header>
-    <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">VonNeuro</a>
+    <a class="home" href="./"><img src="assets/vonneuro-mark.png" alt="">vonNeuro</a>
     <nav><a href="./#examples">Examples</a><a href="hardware.html">Devices</a><a href="connect.html">Connect hardware</a><a href="signup.html">Sign up</a><a href="subscribe.html">Subscribe</a></nav>
   </header>
 
@@ -90,7 +90,7 @@
   fetch(MESSENGER + "/api/public/devices/" + ref, {headers: {"ngrok-skip-browser-warning": "1"}})
     .then(function (r) { if (r.status === 404) throw new Error("missing"); if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(function (d) {
-      document.title = d.name + " · VonNeuro";
+      document.title = d.name + " · vonNeuro";
       document.getElementById("kicker").textContent = "vonNeuro network · " + d.ref;
       document.getElementById("name").textContent = d.name;
       document.getElementById("description").textContent = d.description || "";
